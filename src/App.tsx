@@ -1,5 +1,4 @@
 import { Header } from './components/Header';
-import { OrgContext } from './components/OrgContext';
 import { ScenarioSwitcher } from './components/ScenarioSwitcher';
 import { FlowTimeline } from './components/FlowTimeline';
 import { PhaseControls } from './components/PhaseControls';
@@ -48,7 +47,6 @@ export default function App() {
         onSwitch={switchScenario}
         disabled={demoRunning}
       />
-      <OrgContext phase={phase} scenario={scenario} />
       <FlowTimeline phase={phase} />
 
       <main className="flex-1 overflow-hidden grid grid-cols-4 grid-rows-2 gap-3 p-3">

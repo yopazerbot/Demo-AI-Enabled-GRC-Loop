@@ -1,8 +1,8 @@
-import { BarChart3, TrendingDown, TrendingUp, Shield, AlertTriangle, Building2, GitBranch } from 'lucide-react';
+import { BarChart3, TrendingDown, TrendingUp, Shield, AlertTriangle, Target, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PanelShell } from './PanelShell';
 import { MiniSparkline } from './MiniSparkline';
-import type { DemoPhase, ExecutiveMetrics } from '../types';
+import type { DemoPhase } from '../types';
 import type { ScenarioData } from '../data/scenarioTypes';
 
 interface Props {
@@ -12,40 +12,25 @@ interface Props {
   isDimmed: boolean;
 }
 
-function EntityRow({ metrics, prev, isGroup, deployed, delay }: { metrics: ExecutiveMetrics; prev?: ExecutiveMetrics; isGroup: boolean; deployed: boolean; delay: number }) {
-  const riskDelta = prev ? metrics.overallRiskScore - prev.overallRiskScore : 0;
-  const compDelta = prev ? metrics.compliancePosture - prev.compliancePosture : 0;
+function MetricCard({ label, value, unit, icon: Icon, trend, trendData, trendColor, delay = 0 }: {
+  label: string; value: number; unit?: string; icon: typeof Shield; trend?: 'up' | 'down'; trendData?: number[]; trendColor: string; delay?: number;
+}) {
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }} className="p-3 rounded-lg bg-surface-700/50 border border-surface-border">
-      <div className="flex items-center gap-2 mb-2">
-        {isGroup ? <Building2 className="w-4 h-4 text-accent-indigo" /> : <GitBranch className="w-4 h-4 text-accent-purple" />}
-        <span className="text-xs font-semibold text-slate-200">{metrics.entityName}</span>
-        <span className={`ml-auto text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded ${isGroup ? 'bg-accent-indigo/10 text-accent-indigo' : 'bg-accent-purple/10 text-accent-purple'}`}>{isGroup ? 'Group' : 'Subsidiary'}</span>
+    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay }} className="p-3 rounded-lg bg-surface-700/50 border border-surface-border">
+      <div className="flex items-center gap-1.5 mb-2">
+        <Icon className="w-3.5 h-3.5 text-slate-500" />
+        <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">{label}</span>
+        {trend && (
+          <span className="ml-auto">
+            {trend === 'down' ? <TrendingDown className="w-3.5 h-3.5 text-accent-emerald" /> : <TrendingUp className="w-3.5 h-3.5 text-accent-emerald" />}
+          </span>
+        )}
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <div className="flex items-center gap-2">
-          <AlertTriangle className={`w-4 h-4 ${deployed ? 'text-accent-emerald' : 'text-severity-high'}`} />
-          <div>
-            <div className="flex items-end gap-1">
-              <motion.span key={metrics.overallRiskScore} initial={{ opacity: 0.3 }} animate={{ opacity: 1 }} className={`text-2xl font-bold ${deployed ? 'text-accent-emerald' : 'text-severity-high'}`}>{metrics.overallRiskScore}</motion.span>
-              {deployed && riskDelta < 0 && <motion.span initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: delay + 0.3 }} className="text-[10px] text-accent-emerald mb-1 flex items-center"><TrendingDown className="w-3 h-3" />{riskDelta}</motion.span>}
-            </div>
-            <p className="text-[9px] uppercase tracking-wider text-slate-500">Risk</p>
-          </div>
-          <div className="ml-auto"><MiniSparkline data={metrics.exposureTrend} color={deployed ? '#10b981' : '#f97316'} height={20} width={50} /></div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Shield className={`w-4 h-4 ${deployed ? 'text-accent-emerald' : 'text-accent-amber'}`} />
-          <div>
-            <div className="flex items-end gap-1">
-              <motion.span key={metrics.compliancePosture} initial={{ opacity: 0.3 }} animate={{ opacity: 1 }} className={`text-2xl font-bold ${deployed ? 'text-accent-emerald' : 'text-slate-200'}`}>{metrics.compliancePosture}</motion.span>
-              <span className="text-sm text-slate-500 mb-1">%</span>
-              {deployed && compDelta > 0 && <motion.span initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: delay + 0.4 }} className="text-[10px] text-accent-emerald mb-1 flex items-center"><TrendingUp className="w-3 h-3" />+{compDelta}</motion.span>}
-            </div>
-            <p className="text-[9px] uppercase tracking-wider text-slate-500">Compliance</p>
-          </div>
-          <div className="ml-auto"><MiniSparkline data={metrics.complianceTrend} color={deployed ? '#10b981' : '#f59e0b'} height={20} width={50} /></div>
-        </div>
+      <div className="flex items-end justify-between">
+        <span className="text-2xl font-bold text-white">
+          {value}{unit && <span className="text-sm text-slate-400 font-normal ml-0.5">{unit}</span>}
+        </span>
+        {trendData && <MiniSparkline data={trendData} color={trendColor} height={24} width={60} />}
       </div>
     </motion.div>
   );
@@ -54,12 +39,10 @@ function EntityRow({ metrics, prev, isGroup, deployed, delay }: { metrics: Execu
 export function ExecutivePanel({ phase, scenario, isActive, isDimmed }: Props) {
   const deployed = phase === 'deployment_complete';
   const hasData = phase !== 'idle';
-  const currentMetrics = deployed ? scenario.metricsAfter : scenario.metricsBefore;
-  const prevMetrics = deployed ? scenario.metricsBefore : undefined;
-  const groupMetrics = currentMetrics.find((m) => m.entityId === 'northstar-group')!;
-  const entityMetrics = currentMetrics.find((m) => m.entityId === 'northstar-health')!;
-  const prevGroup = prevMetrics?.find((m) => m.entityId === 'northstar-group');
-  const prevEntity = prevMetrics?.find((m) => m.entityId === 'northstar-health');
+  const m = deployed ? scenario.metricsAfter : scenario.metricsBefore;
+  const prev = deployed ? scenario.metricsBefore : undefined;
+  const riskDelta = prev ? m.overallRiskScore - prev.overallRiskScore : 0;
+  const compDelta = prev ? m.compliancePosture - prev.compliancePosture : 0;
 
   return (
     <PanelShell title="Board Summary" icon={BarChart3} accentColor="text-accent-cyan" isActive={isActive} isDimmed={isDimmed}
@@ -69,8 +52,25 @@ export function ExecutivePanel({ phase, scenario, isActive, isDimmed }: Props) {
       <AnimatePresence mode="wait">
         {hasData ? (
           <motion.div key={`exec-${scenario.id}-${deployed}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col gap-2 h-full">
-            <EntityRow metrics={groupMetrics} prev={prevGroup} isGroup deployed={deployed} delay={0} />
-            <EntityRow metrics={entityMetrics} prev={prevEntity} isGroup={false} deployed={deployed} delay={0.15} />
+            <div className="grid grid-cols-2 gap-2">
+              <MetricCard label="Risk Score" value={m.overallRiskScore} icon={AlertTriangle}
+                trend={deployed ? 'down' : undefined} trendData={m.exposureTrend} trendColor={deployed ? '#10b981' : '#f97316'} delay={0} />
+              <MetricCard label="Compliance" value={m.compliancePosture} unit="%" icon={Shield}
+                trend={deployed ? 'up' : undefined} trendData={m.complianceTrend} trendColor={deployed ? '#10b981' : '#f59e0b'} delay={0.1} />
+              <MetricCard label="Open Findings" value={m.openFindings} icon={Target} trendColor="#6366f1" delay={0.2} />
+              <MetricCard label="Control Coverage" value={m.controlCoverage} unit="%" icon={Layers} trendColor="#3b82f6" delay={0.3} />
+            </div>
+            {deployed && prev && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} transition={{ delay: 0.5 }}
+                className="mt-auto p-2.5 rounded-lg bg-accent-emerald/10 border border-accent-emerald/25">
+                <p className="text-[10px] uppercase tracking-wider text-accent-emerald font-bold mb-1">Post-Control Impact</p>
+                <div className="flex items-center gap-4 text-xs">
+                  <span className="text-slate-300">Risk <span className="text-accent-emerald font-bold">{riskDelta}</span></span>
+                  <span className="text-slate-300">Compliance <span className="text-accent-emerald font-bold">+{compDelta}%</span></span>
+                  <span className="text-slate-300">Findings <span className="text-accent-emerald font-bold">{m.openFindings - prev.openFindings}</span></span>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
         ) : (
           <motion.div key="waiting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center h-full">

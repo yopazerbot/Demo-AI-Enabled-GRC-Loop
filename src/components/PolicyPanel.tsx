@@ -1,4 +1,4 @@
-import { FileCode, GitBranch, Shield, Fingerprint, Key, ScanSearch, Clock, Code } from 'lucide-react';
+import { FileCode, Shield, Fingerprint, Key, ScanSearch, Clock, Code, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PanelShell } from './PanelShell';
 import type { DemoPhase } from '../types';
@@ -68,11 +68,10 @@ export function PolicyPanel({ phase, scenario, isActive, isDimmed }: Props) {
             </div>
             <div className="p-2.5 rounded-lg bg-accent-cyan/10 border border-accent-cyan/30">
               <div className="flex items-center gap-2 mb-1">
-                <GitBranch className="w-3.5 h-3.5 text-accent-cyan" />
+                <Globe className="w-3.5 h-3.5 text-accent-cyan" />
                 <span className="text-[10px] uppercase tracking-wider text-accent-cyan font-bold">Scope</span>
               </div>
-              <p className="text-xs text-slate-200 font-medium">{p.scopeGroup}</p>
-              <p className="text-xs text-accent-cyan font-semibold">{p.scopeSub}</p>
+              <p className="text-xs text-accent-cyan font-semibold">{p.scope}</p>
             </div>
           </motion.div>
         )}

@@ -89,10 +89,6 @@ export function ThreatFeedPanel({ phase, scenario, onTrigger, isActive, isDimmed
                 <span className="text-slate-300 font-medium">{t.vector}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500">Affects</span>
-                <span className="text-accent-amber font-semibold">{t.affects}</span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500">Source</span>
                 <span className="text-slate-300">{t.source}</span>
               </div>
