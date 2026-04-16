@@ -45,9 +45,11 @@ function RiskBlock({ level, label }: { level: RiskLevel; label: string }) {
   );
 }
 
+const PHASES_WITH_DATA: DemoPhase[] = ['risk_mapped', 'policy_generated', 'awaiting_approval', 'deployment_in_progress', 'deployment_complete'];
+
 export function ExecutivePanel({ phase, scenario, isActive, isDimmed }: Props) {
   const deployed = phase === 'deployment_complete';
-  const hasData = phase !== 'idle';
+  const hasData = PHASES_WITH_DATA.includes(phase);
   const beforeLevel = scoreToLevel(scenario.metricsBefore.overallRiskScore);
   const afterLevel = scoreToLevel(scenario.metricsAfter.overallRiskScore);
   const currentLevel = deployed ? afterLevel : beforeLevel;
@@ -73,7 +75,13 @@ export function ExecutivePanel({ phase, scenario, isActive, isDimmed }: Props) {
           >
             {!deployed ? (
               /* Before deployment: show current state only */
-              <div className="p-3 rounded-lg border border-severity-critical/30 bg-severity-critical/10">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+                className="p-3 rounded-lg border border-severity-critical/40 bg-severity-critical/10"
+                style={phase === 'risk_mapped' ? { boxShadow: '0 0 0 1px rgba(239,68,68,0.3), 0 0 24px -4px rgba(239,68,68,0.35)' } : undefined}
+              >
                 <p className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold mb-1">Cyber Risk Level</p>
                 <p className={`text-3xl font-bold ${LEVEL_CONFIG[currentLevel].color}`}>
                   {LEVEL_CONFIG[currentLevel].label}
@@ -81,7 +89,17 @@ export function ExecutivePanel({ phase, scenario, isActive, isDimmed }: Props) {
                 <div className="flex items-center gap-1 mt-1.5 text-[10px] font-bold uppercase tracking-wider text-severity-critical">
                   <AlertTriangle className="w-3 h-3" /> Outside Appetite
                 </div>
-              </div>
+                {phase === 'risk_mapped' && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="text-[11px] text-slate-300 mt-2 leading-relaxed"
+                  >
+                    The board needs to act — risk now sits outside stated appetite.
+                  </motion.p>
+                )}
+              </motion.div>
             ) : (
               /* After deployment: show before → after comparison */
               <motion.div
@@ -144,7 +162,7 @@ export function ExecutivePanel({ phase, scenario, isActive, isDimmed }: Props) {
           </motion.div>
         ) : (
           <motion.div key="waiting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center h-full">
-            <p className="text-sm text-slate-600">Board view refreshes after deployment</p>
+            <p className="text-sm text-slate-600">Board view appears after risk is mapped</p>
           </motion.div>
         )}
       </AnimatePresence>
