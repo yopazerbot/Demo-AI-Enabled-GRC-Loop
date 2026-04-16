@@ -45,7 +45,9 @@ export const scenario1: ScenarioData = {
     isoTheme: 'ISO/IEC 27001',
     isoCode: 'A.8 · Access Control',
     isoDetail: 'Identity compromise risk',
-    exposurePercent: 62,
+    riskStatement: 'Compromise of privileged cloud identities through AI-assisted phishing, leading to unauthorised access to critical business systems.',
+    likelihood: 'Very High',
+    impact: 'Critical',
     callout: '23% of privileged accounts use legacy MFA — vulnerable to AiTM interception.',
   },
 
@@ -205,7 +207,9 @@ export const scenario2: ScenarioData = {
     isoTheme: 'ISO/IEC 27001',
     isoCode: 'A.8.25 · Secure Development',
     isoDetail: 'Software supply chain risk',
-    exposurePercent: 78,
+    riskStatement: 'Unauthenticated remote code execution through a widely-deployed open-source dependency, enabling full compromise of customer-facing and internal services.',
+    likelihood: 'High',
+    impact: 'Critical',
     callout: '14 services use the vulnerable library. CI/CD pipeline has no SCA gating.',
   },
 

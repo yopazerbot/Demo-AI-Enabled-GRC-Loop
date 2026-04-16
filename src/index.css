@@ -1,16 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── Slate-based dark palette ── */
-  --color-surface-900: #0b0e14;
-  --color-surface-800: #111622;
-  --color-surface-700: #161d2e;
-  --color-surface-600: #1c2539;
-  --color-surface-500: #243047;
-  --color-surface-400: #334563;
-  --color-surface-border: #2a3550;
-
-  /* ── Accent palette ── */
+  /* ── Accent palette (shared) ── */
   --color-accent-cyan: #22d3ee;
   --color-accent-blue: #3b82f6;
   --color-accent-indigo: #6366f1;
@@ -19,7 +10,7 @@
   --color-accent-red: #ef4444;
   --color-accent-purple: #a78bfa;
 
-  /* ── Semantic colors ── */
+  /* ── Semantic colors (shared) ── */
   --color-severity-critical: #ef4444;
   --color-severity-high: #f97316;
   --color-severity-medium: #f59e0b;
@@ -31,16 +22,51 @@
   --color-status-error: #ef4444;
   --color-status-waiting: #f59e0b;
 
+  /* ── Surface colors (overridden by theme) ── */
+  --color-surface-900: var(--th-900);
+  --color-surface-800: var(--th-800);
+  --color-surface-700: var(--th-700);
+  --color-surface-600: var(--th-600);
+  --color-surface-500: var(--th-500);
+  --color-surface-400: var(--th-400);
+  --color-surface-border: var(--th-border);
+
   /* ── Typography ── */
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
+/* ── Dark theme (default) ── */
+:root {
+  --th-900: #0b0e14;
+  --th-800: #111622;
+  --th-700: #161d2e;
+  --th-600: #1c2539;
+  --th-500: #243047;
+  --th-400: #334563;
+  --th-border: #2a3550;
+  --th-text: #e2e8f0;
+  --th-text-muted: #94a3b8;
+}
+
+/* ── Light theme ── */
+[data-theme="light"] {
+  --th-900: #f1f5f9;
+  --th-800: #ffffff;
+  --th-700: #f8fafc;
+  --th-600: #e2e8f0;
+  --th-500: #cbd5e1;
+  --th-400: #94a3b8;
+  --th-border: #d1d5db;
+  --th-text: #0f172a;
+  --th-text-muted: #475569;
+}
+
 /* ── Base resets ── */
 body {
   margin: 0;
-  background: var(--color-surface-900);
-  color: #e2e8f0;
+  background: var(--th-900);
+  color: var(--th-text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -52,6 +78,15 @@ body {
   flex-direction: column;
 }
 
+/* ── Light-mode text overrides ── */
+[data-theme="light"] .text-white { color: #0f172a; }
+[data-theme="light"] .text-slate-100 { color: #1e293b; }
+[data-theme="light"] .text-slate-200 { color: #334155; }
+[data-theme="light"] .text-slate-300 { color: #475569; }
+[data-theme="light"] .text-slate-400 { color: #64748b; }
+[data-theme="light"] .text-slate-500 { color: #64748b; }
+[data-theme="light"] .text-slate-600 { color: #94a3b8; }
+
 /* ── Scrollbar styling ── */
 ::-webkit-scrollbar {
   width: 6px;
@@ -61,33 +96,22 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-surface-400);
+  background: var(--th-400);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-surface-500);
-}
-
-/* ── Utility for glowing borders ── */
-.glow-border {
-  box-shadow: 0 0 0 1px var(--color-surface-border),
-              0 0 20px -5px rgba(34, 211, 238, 0.15);
-}
-
-.glow-border-active {
-  box-shadow: 0 0 0 1px var(--color-accent-cyan),
-              0 0 30px -5px rgba(34, 211, 238, 0.3);
+  background: var(--th-500);
 }
 
 /* ── Panel base ── */
 .panel {
-  background: var(--color-surface-800);
-  border: 1px solid var(--color-surface-border);
+  background: var(--th-800);
+  border: 1px solid var(--th-border);
   border-radius: 12px;
 }
 
 .panel-inner {
-  background: var(--color-surface-700);
-  border: 1px solid var(--color-surface-border);
+  background: var(--th-700);
+  border: 1px solid var(--th-border);
   border-radius: 8px;
 }

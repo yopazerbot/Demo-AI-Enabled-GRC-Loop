@@ -30,7 +30,9 @@ export interface ScenarioData {
     isoTheme: string;
     isoCode: string;
     isoDetail: string;
-    exposurePercent: number;
+    riskStatement: string;
+    likelihood: 'Very High' | 'High' | 'Medium' | 'Low';
+    impact: 'Critical' | 'High' | 'Medium' | 'Low';
     callout: string;
   };
   policySummary: {

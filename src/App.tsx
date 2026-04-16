@@ -12,6 +12,7 @@ import { EnvironmentPanel } from './components/EnvironmentPanel';
 import { ExecutivePanel } from './components/ExecutivePanel';
 import { useDemoStateMachine } from './hooks/useDemoStateMachine';
 import { getPanelState } from './hooks/usePanelState';
+import { useTheme } from './hooks/useTheme';
 
 export default function App() {
   const {
@@ -29,6 +30,8 @@ export default function App() {
     switchScenario,
   } = useDemoStateMachine();
 
+  const { theme, toggle: toggleTheme } = useTheme();
+
   const threatState = getPanelState(phase, 'threat');
   const agentsState = getPanelState(phase, 'agents');
   const analysisState = getPanelState(phase, 'analysis');
@@ -41,7 +44,7 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <Header phase={phase} />
+      <Header phase={phase} theme={theme} onToggleTheme={toggleTheme} />
       <OrgContext phase={phase} />
       <ScenarioSwitcher
         scenarios={allScenarios}

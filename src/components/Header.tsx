@@ -1,5 +1,6 @@
-import { Shield } from 'lucide-react';
+import { Shield, Sun, Moon } from 'lucide-react';
 import type { DemoPhase } from '../types';
+import type { Theme } from '../hooks/useTheme';
 
 const phaseLabels: Record<DemoPhase, string> = {
   idle: 'Ready',
@@ -14,9 +15,11 @@ const phaseLabels: Record<DemoPhase, string> = {
 
 interface HeaderProps {
   phase: DemoPhase;
+  theme: Theme;
+  onToggleTheme: () => void;
 }
 
-export function Header({ phase }: HeaderProps) {
+export function Header({ phase, theme, onToggleTheme }: HeaderProps) {
   return (
     <header className="flex items-center justify-between px-5 py-3 border-b border-surface-border bg-surface-800/80 backdrop-blur-sm">
       <div className="flex items-center gap-3">
@@ -32,6 +35,17 @@ export function Header({ phase }: HeaderProps) {
           </p>
         </div>
       </div>
+
+      <button
+        onClick={onToggleTheme}
+        className="w-8 h-8 rounded-lg bg-surface-700 hover:bg-surface-600 border border-surface-border flex items-center justify-center transition-colors cursor-pointer"
+        title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      >
+        {theme === 'dark'
+          ? <Sun className="w-4 h-4 text-slate-400" />
+          : <Moon className="w-4 h-4 text-slate-400" />
+        }
+      </button>
     </header>
   );
 }

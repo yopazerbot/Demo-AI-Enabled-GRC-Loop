@@ -1,4 +1,4 @@
-import { Server, CheckCircle2, XCircle, Loader2, TrendingUp } from 'lucide-react';
+import { Server, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PanelShell } from './PanelShell';
 import type { DemoPhase } from '../types';
@@ -23,9 +23,6 @@ export function EnvironmentPanel({ phase, scenario, isActive, isDimmed }: Props)
   const showData = phase !== 'idle' && !deploying;
 
   const pct = percentCompliant(env.affectedAssets);
-  const pctBefore = percentCompliant(scenario.envBefore.affectedAssets);
-  const delta = deployed ? pct - pctBefore : 0;
-
   const compliantCount = env.affectedAssets.filter((a) => a.compliant).length;
   const total = env.affectedAssets.length;
 
@@ -65,13 +62,6 @@ export function EnvironmentPanel({ phase, scenario, isActive, isDimmed }: Props)
                   />
                 </div>
               </div>
-              {deployed && delta > 0 && (
-                <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }}
-                  className="flex items-center gap-1 text-accent-emerald bg-accent-emerald/10 px-3 py-1.5 rounded-lg border border-accent-emerald/25">
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="text-sm font-bold">+{delta}pp</span>
-                </motion.div>
-              )}
             </div>
 
             {/* Asset grid */}
