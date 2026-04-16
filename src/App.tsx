@@ -1,4 +1,5 @@
 import { Header } from './components/Header';
+import { OrgContext } from './components/OrgContext';
 import { PhaseControls } from './components/PhaseControls';
 import { ThreatFeedPanel } from './components/ThreatFeedPanel';
 import { AgentPanel } from './components/AgentPanel';
@@ -25,6 +26,9 @@ export default function App() {
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Top bar */}
       <Header phase={phase} />
+
+      {/* Organizational context */}
+      <OrgContext phase={phase} />
 
       {/* Main grid */}
       <main className="flex-1 overflow-hidden grid grid-cols-12 grid-rows-[1fr_1fr_1fr] gap-3 p-3">
