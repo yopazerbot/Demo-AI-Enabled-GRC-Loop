@@ -1,4 +1,4 @@
-import { Search, BookOpen } from 'lucide-react';
+import { Search, BookOpen, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PanelShell } from './PanelShell';
 import type { DemoPhase } from '../types';
@@ -47,30 +47,23 @@ export function AnalysisPanel({ phase, scenario, isActive, isDimmed }: Props) {
               <p className="text-[11px] text-slate-400 mt-0.5">{s.isoDetail}</p>
             </div>
 
-            {/* Single exposure bar */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Residual Exposure</span>
-                <span className={`text-lg font-bold ${s.exposurePercent >= 60 ? 'text-severity-critical' : 'text-severity-high'}`}>
-                  {s.exposurePercent}%
+            {/* Actual impact — the anchor */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              className="flex-1 flex flex-col justify-center p-4 rounded-lg bg-severity-high/10 border border-severity-high/30"
+            >
+              <div className="flex items-center gap-2 mb-2.5">
+                <AlertTriangle className="w-4 h-4 text-severity-high" />
+                <span className="text-[10px] uppercase tracking-wider text-severity-high font-bold">
+                  Actual Impact
                 </span>
               </div>
-              <div className="w-full h-2.5 bg-surface-600 rounded-full overflow-hidden">
-                <motion.div
-                  className={`h-full rounded-full ${s.exposurePercent >= 60 ? 'bg-gradient-to-r from-severity-high to-severity-critical' : 'bg-gradient-to-r from-severity-medium to-severity-high'}`}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${s.exposurePercent}%` }}
-                  transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-                />
-              </div>
-            </div>
-
-            {/* Callout */}
-            <div className="mt-auto p-3 rounded-lg bg-surface-700/50 border-l-2 border-l-severity-high">
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-base text-white font-semibold leading-snug">
                 {s.callout}
               </p>
-            </div>
+            </motion.div>
           </motion.div>
         )}
         {!active && !analysing && (
