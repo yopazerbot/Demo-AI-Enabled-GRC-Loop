@@ -11,13 +11,23 @@ interface Props {
   isDimmed: boolean;
 }
 
+function percentCompliant(assets: { compliant: boolean }[]): number {
+  if (assets.length === 0) return 0;
+  return Math.round((assets.filter((a) => a.compliant).length / assets.length) * 100);
+}
+
 export function EnvironmentPanel({ phase, scenario, isActive, isDimmed }: Props) {
   const deployed = phase === 'deployment_complete';
   const deploying = phase === 'deployment_in_progress';
   const env = deployed ? scenario.envAfter : scenario.envBefore;
   const showData = phase !== 'idle' && !deploying;
-  const delta = scenario.envAfter.complianceScore - scenario.envBefore.complianceScore;
+
+  const pct = percentCompliant(env.affectedAssets);
+  const pctBefore = percentCompliant(scenario.envBefore.affectedAssets);
+  const delta = deployed ? pct - pctBefore : 0;
+
   const compliantCount = env.affectedAssets.filter((a) => a.compliant).length;
+  const total = env.affectedAssets.length;
 
   return (
     <PanelShell title="Corporate Environment" icon={Server} accentColor="text-accent-emerald" isActive={isActive} isDimmed={isDimmed}
@@ -33,20 +43,25 @@ export function EnvironmentPanel({ phase, scenario, isActive, isDimmed }: Props)
         )}
         {showData && (
           <motion.div key={`env-${scenario.id}-${deployed}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col gap-4">
-            {/* Big compliance score */}
+            {/* Headline: assets compliant */}
             <div className="flex items-center justify-between">
               <div>
-                <div className="flex items-end gap-1.5">
-                  <motion.span key={env.complianceScore} initial={{ opacity: 0.3 }} animate={{ opacity: 1 }} className={`text-4xl font-bold ${deployed ? 'text-accent-emerald' : 'text-slate-200'}`}>
-                    {env.complianceScore}
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mb-1">Critical Assets Compliant</p>
+                <div className="flex items-end gap-2">
+                  <motion.span key={compliantCount} initial={{ opacity: 0.3 }} animate={{ opacity: 1 }} className={`text-4xl font-bold ${deployed ? 'text-accent-emerald' : 'text-slate-200'}`}>
+                    {compliantCount}
                   </motion.span>
-                  <span className="text-lg text-slate-500 mb-1">%</span>
-                  <span className="text-[11px] text-slate-500 mb-2 uppercase tracking-wider">compliant</span>
+                  <span className="text-xl text-slate-500 mb-1">of {total}</span>
+                  <span className={`text-sm font-semibold mb-1.5 ${deployed ? 'text-accent-emerald' : 'text-slate-400'}`}>
+                    ({pct}%)
+                  </span>
                 </div>
-                <div className="w-48 h-2 bg-surface-600 rounded-full overflow-hidden mt-1.5">
+                <div className="w-56 h-2 bg-surface-600 rounded-full overflow-hidden mt-2">
                   <motion.div
                     className={deployed ? 'h-full bg-gradient-to-r from-accent-emerald/80 to-accent-emerald' : 'h-full bg-gradient-to-r from-accent-amber/80 to-accent-amber'}
-                    initial={{ width: 0 }} animate={{ width: `${env.complianceScore}%` }} transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${pct}%` }}
+                    transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
                   />
                 </div>
               </div>
@@ -54,7 +69,7 @@ export function EnvironmentPanel({ phase, scenario, isActive, isDimmed }: Props)
                 <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }}
                   className="flex items-center gap-1 text-accent-emerald bg-accent-emerald/10 px-3 py-1.5 rounded-lg border border-accent-emerald/25">
                   <TrendingUp className="w-4 h-4" />
-                  <span className="text-sm font-bold">+{delta}%</span>
+                  <span className="text-sm font-bold">+{delta}pp</span>
                 </motion.div>
               )}
             </div>
@@ -82,18 +97,6 @@ export function EnvironmentPanel({ phase, scenario, isActive, isDimmed }: Props)
                   </motion.div>
                 ))}
               </div>
-            </div>
-
-            {/* Summary */}
-            <div className="mt-auto flex items-center gap-3 text-xs text-slate-400">
-              <span className="flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-accent-emerald" />
-                {compliantCount} compliant
-              </span>
-              <span className="flex items-center gap-1">
-                <XCircle className="w-3.5 h-3.5 text-slate-500" />
-                {env.affectedAssets.length - compliantCount} non-compliant
-              </span>
             </div>
           </motion.div>
         )}
