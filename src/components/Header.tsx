@@ -75,7 +75,7 @@ export function Header({ phase }: HeaderProps) {
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-700/50 border border-surface-border">
           <Zap className="w-3 h-3 text-accent-amber" />
           <span className="text-[10px] text-slate-400">Powered by</span>
-          <span className="text-[10px] text-slate-300 font-semibold">OpenClaw</span>
+          <span className="text-[10px] text-slate-300 font-semibold">AI Orchestration</span>
         </div>
 
         {/* Org */}
