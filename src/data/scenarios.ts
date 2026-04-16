@@ -122,10 +122,25 @@ export const scenario1: ScenarioData = {
   },
 
   agents: [
-    { id: 'threat-intake', name: 'Threat Intake Agent', role: 'Analyzes raw threat intelligence events.', status: 'idle', description: '' },
-    { id: 'risk-mapping', name: 'Risk Mapping Agent', role: 'Maps threats to risk scenarios and ISO controls.', status: 'idle', description: '' },
-    { id: 'control-engineering', name: 'Control Engineering Agent', role: 'Generates policies and policy-as-code.', status: 'idle', description: '' },
+    { id: 'threat-intake', name: 'Threat Intake Agent', role: 'Reads the MISP event and explains it in business terms.', status: 'idle', description: '' },
+    { id: 'risk-mapping', name: 'Risk Mapping Agent', role: 'Connects the threat to our risk register and ISO controls.', status: 'idle', description: '' },
+    { id: 'control-engineering', name: 'Control Engineering Agent', role: 'Drafts the policy update and policy-as-code artifact.', status: 'idle', description: '' },
   ],
+
+  agentSteps: {
+    'threat-intake': {
+      processing: 'Parsing MISP-2026-04871, extracting TTPs and business context…',
+      output: 'Critical AiTM phishing campaign targeting OAuth tokens and cloud identities. Affects privileged access.',
+    },
+    'risk-mapping': {
+      processing: 'Matching threat to risk register and ISO 27001 control themes…',
+      output: 'Mapped to RSK-2026-0087 (Identity compromise) → ISO 27001 A.8 Access Control. Residual exposure: 62%.',
+    },
+    'control-engineering': {
+      processing: 'Drafting policy text and Azure Policy artifact…',
+      output: 'POL-IAM-2026-012 drafted: phishing-resistant MFA, admin-only OAuth consent, compliant device required.',
+    },
+  },
 
   auditEntries: {
     new_event_received: { actor: 'MISP Connector', action: 'Threat Ingested', detail: 'MISP-2026-04871 — AI phishing. Critical.', phase: 'new_event_received' },
@@ -260,10 +275,25 @@ export const scenario2: ScenarioData = {
   },
 
   agents: [
-    { id: 'threat-intake', name: 'Threat Intake Agent', role: 'Analyzes vulnerability disclosures.', status: 'idle', description: '' },
-    { id: 'risk-mapping', name: 'Risk Mapping Agent', role: 'Maps vulnerabilities to risk scenarios.', status: 'idle', description: '' },
-    { id: 'control-engineering', name: 'Control Engineering Agent', role: 'Generates SDLC policies and SCA rules.', status: 'idle', description: '' },
+    { id: 'threat-intake', name: 'Threat Intake Agent', role: 'Triages the bug bounty report into business language.', status: 'idle', description: '' },
+    { id: 'risk-mapping', name: 'Risk Mapping Agent', role: 'Scans the SBOM to find affected services and map to controls.', status: 'idle', description: '' },
+    { id: 'control-engineering', name: 'Control Engineering Agent', role: 'Generates the SCA pipeline rule and patch SLA policy.', status: 'idle', description: '' },
   ],
+
+  agentSteps: {
+    'threat-intake': {
+      processing: 'Reading bug bounty report BB-2026-00193, checking CVE-2026-31847 severity…',
+      output: 'Unauthenticated RCE in JWT library via deserialization flaw. Exploitable in production today.',
+    },
+    'risk-mapping': {
+      processing: 'Scanning SBOM across 14 services, correlating to ISO 27001 SDLC controls…',
+      output: 'Mapped to RSK-2026-0094 (Supply chain compromise) → ISO 27001 A.8.25 Secure Development. Exposure: 78%.',
+    },
+    'control-engineering': {
+      processing: 'Drafting SCA pipeline gate rule and critical patch SLA policy…',
+      output: 'POL-SDLC-2026-008 drafted: mandatory SCA scan in CI/CD, 24h patch SLA, SBOM validation required.',
+    },
+  },
 
   auditEntries: {
     new_event_received: { actor: 'Bug Bounty Triage', action: 'Disclosure Ingested', detail: 'BB-2026-00193 — Critical RCE. TLP:RED.', phase: 'new_event_received' },

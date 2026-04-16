@@ -15,35 +15,37 @@ export const PHASE_ORDER: DemoPhase[] = [
 ];
 
 function agentsForPhase(phase: DemoPhase, scenario: ScenarioData): AgentState[] {
+  const steps = scenario.agentSteps;
   return scenario.agents.map((agent) => {
+    const step = steps[agent.id];
     switch (phase) {
       case 'idle':
       case 'new_event_received':
-        return { ...agent, status: 'idle' as const };
+        return { ...agent, status: 'idle' as const, outputSummary: undefined };
 
       case 'threat_analysis_in_progress':
         if (agent.id === 'threat-intake')
-          return { ...agent, status: 'processing' as const, outputSummary: 'Analyzing threat vectors…' };
-        return { ...agent, status: 'idle' as const };
+          return { ...agent, status: 'processing' as const, outputSummary: step?.processing };
+        return { ...agent, status: 'idle' as const, outputSummary: undefined };
 
       case 'risk_mapped':
         if (agent.id === 'threat-intake')
-          return { ...agent, status: 'completed' as const, outputSummary: 'Threat interpreted.' };
+          return { ...agent, status: 'completed' as const, outputSummary: step?.output };
         if (agent.id === 'risk-mapping')
-          return { ...agent, status: 'processing' as const, outputSummary: 'Mapping to control themes…' };
-        return { ...agent, status: 'idle' as const };
+          return { ...agent, status: 'processing' as const, outputSummary: step?.processing };
+        return { ...agent, status: 'idle' as const, outputSummary: undefined };
 
       case 'policy_generated':
         if (agent.id === 'threat-intake')
-          return { ...agent, status: 'completed' as const };
+          return { ...agent, status: 'completed' as const, outputSummary: step?.output };
         if (agent.id === 'risk-mapping')
-          return { ...agent, status: 'completed' as const };
+          return { ...agent, status: 'completed' as const, outputSummary: step?.output };
         if (agent.id === 'control-engineering')
-          return { ...agent, status: 'processing' as const, outputSummary: 'Generating policy…' };
+          return { ...agent, status: 'processing' as const, outputSummary: step?.processing };
         return agent;
 
       default:
-        return { ...agent, status: 'completed' as const };
+        return { ...agent, status: 'completed' as const, outputSummary: step?.output };
     }
   });
 }

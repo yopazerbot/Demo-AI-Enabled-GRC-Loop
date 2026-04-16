@@ -24,6 +24,7 @@ export interface ScenarioData {
   metricsBefore: ExecutiveMetrics;
   metricsAfter: ExecutiveMetrics;
   agents: AgentState[];
+  agentSteps: Record<string, { processing: string; output: string }>;
   auditEntries: Partial<Record<DemoPhase, Omit<AuditEntry, 'id' | 'timestamp'>>>;
   analysisSummary: {
     isoTheme: string;

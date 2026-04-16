@@ -1,8 +1,7 @@
-import { BarChart3, TrendingDown, TrendingUp, Shield, AlertTriangle, Target, Layers } from 'lucide-react';
+import { BarChart3, Shield, AlertTriangle, CheckCircle2, ScrollText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PanelShell } from './PanelShell';
-import { MiniSparkline } from './MiniSparkline';
-import type { DemoPhase } from '../types';
+import type { DemoPhase, ExecutiveMetrics } from '../types';
 import type { ScenarioData } from '../data/scenarioTypes';
 
 interface Props {
@@ -12,27 +11,122 @@ interface Props {
   isDimmed: boolean;
 }
 
-function MetricCard({ label, value, unit, icon: Icon, trend, trendData, trendColor, delay = 0 }: {
-  label: string; value: number; unit?: string; icon: typeof Shield; trend?: 'up' | 'down'; trendData?: number[]; trendColor: string; delay?: number;
-}) {
+type RiskLevel = 'high' | 'elevated' | 'moderate' | 'low';
+
+function scoreToLevel(score: number): RiskLevel {
+  if (score >= 40) return 'high';
+  if (score >= 25) return 'elevated';
+  if (score >= 15) return 'moderate';
+  return 'low';
+}
+
+const LEVEL_CONFIG: Record<RiskLevel, { label: string; color: string; bg: string; within: boolean }> = {
+  high:     { label: 'High',     color: 'text-severity-critical',  bg: 'bg-severity-critical/10 border-severity-critical/30', within: false },
+  elevated: { label: 'Elevated', color: 'text-severity-high',      bg: 'bg-severity-high/10 border-severity-high/30',         within: false },
+  moderate: { label: 'Moderate', color: 'text-severity-medium',    bg: 'bg-severity-medium/10 border-severity-medium/30',     within: true  },
+  low:      { label: 'Low',      color: 'text-accent-emerald',     bg: 'bg-accent-emerald/10 border-accent-emerald/30',       within: true  },
+};
+
+function RiskAppetiteDial({ level }: { level: RiskLevel }) {
+  const levels: RiskLevel[] = ['low', 'moderate', 'elevated', 'high'];
+  const activeIdx = levels.indexOf(level);
+  const cfg = LEVEL_CONFIG[level];
+
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, delay }} className="p-3 rounded-lg bg-surface-700/50 border border-surface-border">
-      <div className="flex items-center gap-1.5 mb-2">
-        <Icon className="w-3.5 h-3.5 text-slate-500" />
-        <span className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">{label}</span>
-        {trend && (
-          <span className="ml-auto">
-            {trend === 'down' ? <TrendingDown className="w-3.5 h-3.5 text-accent-emerald" /> : <TrendingUp className="w-3.5 h-3.5 text-accent-emerald" />}
-          </span>
+    <div className="space-y-2">
+      {/* Big status */}
+      <div className={`p-3 rounded-lg border ${cfg.bg}`}>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[9px] uppercase tracking-wider text-slate-500 font-semibold mb-0.5">
+              Cyber Risk Level
+            </p>
+            <p className={`text-xl font-bold ${cfg.color}`}>{cfg.label}</p>
+          </div>
+          <div className={`flex items-center gap-1 px-2 py-1 rounded ${
+            cfg.within ? 'bg-accent-emerald/15 text-accent-emerald' : 'bg-severity-critical/15 text-severity-critical'
+          }`}>
+            {cfg.within ? <CheckCircle2 className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
+            <span className="text-[9px] font-bold uppercase tracking-wider">
+              {cfg.within ? 'Within Appetite' : 'Outside Appetite'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Appetite scale */}
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[9px] text-slate-500 uppercase tracking-wider font-semibold">Risk Appetite Scale</span>
+          <span className="text-[9px] text-slate-500">Threshold: Moderate</span>
+        </div>
+        <div className="flex items-center gap-0.5">
+          {levels.map((l, i) => {
+            const isActive = i === activeIdx;
+            const lc = LEVEL_CONFIG[l];
+            return (
+              <motion.div
+                key={l}
+                animate={{ scale: isActive ? 1.02 : 1 }}
+                className={`
+                  flex-1 text-center py-1.5 rounded text-[9px] font-bold uppercase tracking-wider border transition-all
+                  ${isActive
+                    ? `${lc.bg} ${lc.color} border-current`
+                    : 'bg-surface-700/40 text-slate-600 border-surface-border'
+                  }
+                `}
+              >
+                {lc.label}
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ComplianceCard({ m, prev }: { m: ExecutiveMetrics; prev?: ExecutiveMetrics }) {
+  const delta = prev ? m.compliancePosture - prev.compliancePosture : 0;
+
+  return (
+    <div className="p-3 rounded-lg bg-surface-700/50 border border-surface-border">
+      <div className="flex items-center gap-2 mb-2">
+        <Shield className="w-3.5 h-3.5 text-accent-emerald" />
+        <span className="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">
+          ISO 27001 / NIS2 Compliance
+        </span>
+      </div>
+      <div className="flex items-end gap-2">
+        <motion.span
+          key={m.compliancePosture}
+          initial={{ opacity: 0.3 }}
+          animate={{ opacity: 1 }}
+          className={`text-3xl font-bold ${delta > 0 ? 'text-accent-emerald' : 'text-slate-200'}`}
+        >
+          {m.compliancePosture}
+        </motion.span>
+        <span className="text-sm text-slate-500 mb-1">%</span>
+        {delta > 0 && (
+          <motion.span
+            initial={{ opacity: 0, x: -4 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-[11px] text-accent-emerald font-bold mb-1"
+          >
+            +{delta}pp
+          </motion.span>
         )}
       </div>
-      <div className="flex items-end justify-between">
-        <span className="text-2xl font-bold text-white">
-          {value}{unit && <span className="text-sm text-slate-400 font-normal ml-0.5">{unit}</span>}
-        </span>
-        {trendData && <MiniSparkline data={trendData} color={trendColor} height={24} width={60} />}
+      <div className="w-full h-1.5 bg-surface-600 rounded-full overflow-hidden mt-2">
+        <motion.div
+          className={delta > 0 ? 'h-full bg-gradient-to-r from-accent-emerald/80 to-accent-emerald' : 'h-full bg-gradient-to-r from-accent-amber/80 to-accent-amber'}
+          initial={{ width: 0 }}
+          animate={{ width: `${m.compliancePosture}%` }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        />
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -41,40 +135,50 @@ export function ExecutivePanel({ phase, scenario, isActive, isDimmed }: Props) {
   const hasData = phase !== 'idle';
   const m = deployed ? scenario.metricsAfter : scenario.metricsBefore;
   const prev = deployed ? scenario.metricsBefore : undefined;
-  const riskDelta = prev ? m.overallRiskScore - prev.overallRiskScore : 0;
-  const compDelta = prev ? m.compliancePosture - prev.compliancePosture : 0;
+  const level = scoreToLevel(m.overallRiskScore);
 
   return (
-    <PanelShell title="Board Summary" icon={BarChart3} accentColor="text-accent-cyan" isActive={isActive} isDimmed={isDimmed}
+    <PanelShell
+      title="Board Summary"
+      icon={BarChart3}
+      accentColor="text-accent-cyan"
+      isActive={isActive}
+      isDimmed={isDimmed}
       badge={deployed ? 'REFRESHED' : hasData ? 'LIVE' : undefined}
       badgeColor={deployed ? 'bg-accent-emerald/15 text-accent-emerald' : 'bg-accent-cyan/15 text-accent-cyan'}
     >
       <AnimatePresence mode="wait">
         {hasData ? (
-          <motion.div key={`exec-${scenario.id}-${deployed}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col gap-2 h-full">
-            <div className="grid grid-cols-2 gap-2">
-              <MetricCard label="Risk Score" value={m.overallRiskScore} icon={AlertTriangle}
-                trend={deployed ? 'down' : undefined} trendData={m.exposureTrend} trendColor={deployed ? '#10b981' : '#f97316'} delay={0} />
-              <MetricCard label="Compliance" value={m.compliancePosture} unit="%" icon={Shield}
-                trend={deployed ? 'up' : undefined} trendData={m.complianceTrend} trendColor={deployed ? '#10b981' : '#f59e0b'} delay={0.1} />
-              <MetricCard label="Open Findings" value={m.openFindings} icon={Target} trendColor="#6366f1" delay={0.2} />
-              <MetricCard label="Control Coverage" value={m.controlCoverage} unit="%" icon={Layers} trendColor="#3b82f6" delay={0.3} />
-            </div>
-            {deployed && prev && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} transition={{ delay: 0.5 }}
-                className="mt-auto p-2.5 rounded-lg bg-accent-emerald/10 border border-accent-emerald/25">
-                <p className="text-[10px] uppercase tracking-wider text-accent-emerald font-bold mb-1">Post-Control Impact</p>
-                <div className="flex items-center gap-4 text-xs">
-                  <span className="text-slate-300">Risk <span className="text-accent-emerald font-bold">{riskDelta}</span></span>
-                  <span className="text-slate-300">Compliance <span className="text-accent-emerald font-bold">+{compDelta}%</span></span>
-                  <span className="text-slate-300">Findings <span className="text-accent-emerald font-bold">{m.openFindings - prev.openFindings}</span></span>
+          <motion.div
+            key={`exec-${scenario.id}-${deployed}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex flex-col gap-3 h-full"
+          >
+            <RiskAppetiteDial level={level} />
+            <ComplianceCard m={m} prev={prev} />
+
+            {/* Board statement */}
+            <div className="mt-auto p-2.5 rounded-lg bg-surface-700/40 border border-surface-border">
+              <div className="flex items-start gap-2">
+                <ScrollText className="w-3.5 h-3.5 text-accent-cyan shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-[9px] uppercase tracking-wider text-accent-cyan font-bold mb-0.5">
+                    Board Statement
+                  </p>
+                  <p className="text-[11px] text-slate-300 leading-relaxed">
+                    {deployed
+                      ? 'Threat contained through approved policy uplift. Residual risk returned to within appetite. NIS2 reporting obligations met.'
+                      : 'Active threat event has moved cyber risk outside stated appetite. Governance uplift in progress.'}
+                  </p>
                 </div>
-              </motion.div>
-            )}
+              </div>
+            </div>
           </motion.div>
         ) : (
           <motion.div key="waiting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center h-full">
-            <p className="text-sm text-slate-600">Metrics refresh after deployment</p>
+            <p className="text-sm text-slate-600">Board view refreshes after deployment</p>
           </motion.div>
         )}
       </AnimatePresence>
