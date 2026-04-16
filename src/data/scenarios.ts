@@ -132,7 +132,7 @@ export const scenario1: ScenarioData = {
 
   agents: [
     { id: 'threat-intake', name: 'Threat Intake Agent', role: 'Reads the MISP event and explains it in business terms.', status: 'idle', description: '' },
-    { id: 'risk-mapping', name: 'Risk Mapping Agent', role: 'Connects the threat to our risk register and ISO controls.', status: 'idle', description: '' },
+    { id: 'risk-mapping', name: 'Risk Assessment Agent', role: 'Connects the threat to our risk register and ISO controls.', status: 'idle', description: '' },
     { id: 'control-engineering', name: 'Control Engineering Agent', role: 'Drafts the policy update and policy-as-code artifact.', status: 'idle', description: '' },
   ],
 
@@ -154,7 +154,7 @@ export const scenario1: ScenarioData = {
   auditEntries: {
     new_event_received: { actor: 'MISP Connector', action: 'Threat Ingested', detail: 'MISP-2026-04871 — AI phishing. Critical.', phase: 'new_event_received' },
     threat_analysis_in_progress: { actor: 'Threat Intake Agent', action: 'Analysing', detail: 'Extracting threat context.', phase: 'threat_analysis_in_progress' },
-    risk_mapped: { actor: 'Risk Mapping Agent', action: 'Risk Mapped', detail: 'RSK-2026-0087 → ISO A.8.', phase: 'risk_mapped' },
+    risk_mapped: { actor: 'Risk Assessment Agent', action: 'Risk Assessed', detail: 'RSK-2026-0087 → ISO A.8.', phase: 'risk_mapped' },
     policy_generated: { actor: 'Control Engineering Agent', action: 'Policy Drafted', detail: 'POL-IAM-2026-012 ready.', phase: 'policy_generated' },
     awaiting_approval: { actor: 'Orchestration', action: 'Approval Gate', detail: 'Awaiting CRO.', phase: 'awaiting_approval' },
     deployment_in_progress: { actor: 'Dr. Elena Vasquez', action: 'Approved', detail: 'Deploying.', phase: 'deployment_in_progress' },
@@ -294,7 +294,7 @@ export const scenario2: ScenarioData = {
 
   agents: [
     { id: 'threat-intake', name: 'Threat Intake Agent', role: 'Triages the bug bounty report into business language.', status: 'idle', description: '' },
-    { id: 'risk-mapping', name: 'Risk Mapping Agent', role: 'Scans the SBOM to find affected services and map to controls.', status: 'idle', description: '' },
+    { id: 'risk-mapping', name: 'Risk Assessment Agent', role: 'Scans the SBOM to find affected services and map to controls.', status: 'idle', description: '' },
     { id: 'control-engineering', name: 'Control Engineering Agent', role: 'Generates the SCA pipeline rule and patch SLA policy.', status: 'idle', description: '' },
   ],
 
@@ -316,7 +316,7 @@ export const scenario2: ScenarioData = {
   auditEntries: {
     new_event_received: { actor: 'Bug Bounty Triage', action: 'Disclosure Ingested', detail: 'BB-2026-00193 — Critical RCE. TLP:RED.', phase: 'new_event_received' },
     threat_analysis_in_progress: { actor: 'Threat Intake Agent', action: 'Analysing', detail: 'Assessing CVE-2026-31847 blast radius.', phase: 'threat_analysis_in_progress' },
-    risk_mapped: { actor: 'Risk Mapping Agent', action: 'Risk Mapped', detail: 'RSK-2026-0094 → ISO A.8.25.', phase: 'risk_mapped' },
+    risk_mapped: { actor: 'Risk Assessment Agent', action: 'Risk Assessed', detail: 'RSK-2026-0094 → ISO A.8.25.', phase: 'risk_mapped' },
     policy_generated: { actor: 'Control Engineering Agent', action: 'Policy Drafted', detail: 'POL-SDLC-2026-008 ready.', phase: 'policy_generated' },
     awaiting_approval: { actor: 'Orchestration', action: 'Approval Gate', detail: 'Awaiting CRO.', phase: 'awaiting_approval' },
     deployment_in_progress: { actor: 'Dr. Elena Vasquez', action: 'Approved', detail: 'Emergency patch deploying.', phase: 'deployment_in_progress' },

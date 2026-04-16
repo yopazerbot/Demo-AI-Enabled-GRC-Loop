@@ -3,7 +3,7 @@ import type { DemoPhase } from '../types';
 
 const NEXT_LABELS: Partial<Record<DemoPhase, string>> = {
   new_event_received: 'Analyse Threat',
-  threat_analysis_in_progress: 'Map Risk',
+  threat_analysis_in_progress: 'Assess Risk',
   risk_mapped: 'Generate Policy',
   policy_generated: 'Submit for Approval',
   deployment_in_progress: 'Complete',

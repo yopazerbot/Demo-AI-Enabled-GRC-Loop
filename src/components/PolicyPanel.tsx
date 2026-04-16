@@ -77,7 +77,7 @@ export function PolicyPanel({ phase, scenario, isActive, isDimmed }: Props) {
         )}
         {!active && !generating && (
           <motion.div key="waiting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center h-full">
-            <p className="text-sm text-slate-600">Waiting for risk mapping</p>
+            <p className="text-sm text-slate-600">Waiting for risk assessment</p>
           </motion.div>
         )}
       </AnimatePresence>

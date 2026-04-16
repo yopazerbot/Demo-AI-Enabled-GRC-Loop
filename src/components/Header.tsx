@@ -6,7 +6,7 @@ const phaseLabels: Record<DemoPhase, string> = {
   idle: 'Ready',
   new_event_received: 'Ingesting Threat',
   threat_analysis_in_progress: 'Analyzing',
-  risk_mapped: 'Mapping Risk',
+  risk_mapped: 'Assessing Risk',
   policy_generated: 'Drafting Policy',
   awaiting_approval: 'Awaiting Approval',
   deployment_in_progress: 'Deploying',

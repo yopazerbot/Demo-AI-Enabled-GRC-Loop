@@ -11,7 +11,7 @@ const statusConfig: Record<AgentStatus, { icon: typeof Circle; color: string; bg
 
 const AGENT_SHORT_LABELS: Record<string, string> = {
   'threat-intake': 'Threat Intake',
-  'risk-mapping': 'Risk Mapping',
+  'risk-mapping': 'Risk Assessment',
   'control-engineering': 'Policy Engineering',
 };
 

@@ -28,7 +28,7 @@ export function AnalysisPanel({ phase, scenario, isActive, isDimmed }: Props) {
 
   return (
     <PanelShell
-      title="Risk Mapping"
+      title="Risk Assessment"
       icon={Search}
       accentColor="text-accent-indigo"
       isActive={isActive}
