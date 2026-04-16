@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Rss, Bot, Search, FileCode, ShieldCheck, Server, BarChart3, Check } from 'lucide-react';
+import { Rss, Bot, Search, FileCode, ShieldCheck, Server, CheckCircle2, BarChart3, Check } from 'lucide-react';
 import type { DemoPhase } from '../types';
 
 const STAGES = [
@@ -9,6 +9,7 @@ const STAGES = [
   { id: 'policy', label: 'Policy', icon: FileCode, phases: ['policy_generated'] as DemoPhase[] },
   { id: 'approval', label: 'Approval', icon: ShieldCheck, phases: ['awaiting_approval'] as DemoPhase[] },
   { id: 'deploy', label: 'Deploy', icon: Server, phases: ['deployment_in_progress'] as DemoPhase[] },
+  { id: 'target', label: 'Target State', icon: CheckCircle2, phases: ['environment_updated'] as DemoPhase[] },
   { id: 'board', label: 'Board', icon: BarChart3, phases: ['deployment_complete'] as DemoPhase[] },
 ];
 

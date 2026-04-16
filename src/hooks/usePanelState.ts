@@ -14,7 +14,8 @@ const ACTIVE_PANEL_BY_PHASE: Record<DemoPhase, PanelId[]> = {
   policy_generated: ['policy'],
   awaiting_approval: ['approval', 'environment'],
   deployment_in_progress: ['environment'],
-  deployment_complete: ['environment', 'executive'],
+  environment_updated: ['environment'],
+  deployment_complete: ['executive'],
 };
 
 // Which panels are visible at full opacity (reached) but not highlighted.
@@ -26,7 +27,8 @@ const REACHED_PANELS_BY_PHASE: Record<DemoPhase, PanelId[]> = {
   policy_generated: ['threat', 'agents', 'analysis', 'executive'],
   awaiting_approval: ['threat', 'agents', 'analysis', 'policy', 'executive'],
   deployment_in_progress: ['threat', 'agents', 'analysis', 'policy', 'approval', 'executive'],
-  deployment_complete: ['threat', 'agents', 'analysis', 'policy', 'approval'],
+  environment_updated: ['threat', 'agents', 'analysis', 'policy', 'approval', 'executive'],
+  deployment_complete: ['threat', 'agents', 'analysis', 'policy', 'approval', 'environment'],
 };
 
 export function getPanelState(phase: DemoPhase, panelId: PanelId): { isActive: boolean; isDimmed: boolean } {

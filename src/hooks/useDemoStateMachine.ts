@@ -11,6 +11,7 @@ export const PHASE_ORDER: DemoPhase[] = [
   'policy_generated',
   'awaiting_approval',
   'deployment_in_progress',
+  'environment_updated',
   'deployment_complete',
 ];
 
@@ -85,6 +86,19 @@ export function useDemoStateMachine() {
     goToPhase(PHASE_ORDER[idx + 1], scenario);
   }, [phase, goToPhase, scenario]);
 
+  const stepBack = useCallback(() => {
+    const idx = PHASE_ORDER.indexOf(phase);
+    if (idx <= 0) return;
+    const prev = PHASE_ORDER[idx - 1];
+    setPhase(prev);
+    setAgents(agentsForPhase(prev, scenario));
+    // Trim the audit trail to remove entries from the phases we're rewinding past
+    setAuditTrail((trail) => trail.slice(0, Math.max(0, idx - 1)));
+    if (phase === 'deployment_in_progress' || phase === 'environment_updated' || phase === 'deployment_complete') {
+      setApprovalStatus('pending');
+    }
+  }, [phase, scenario]);
+
   const triggerScenario = useCallback(() => {
     if (phase !== 'idle') return;
     setApprovalStatus('pending');
@@ -128,6 +142,7 @@ export function useDemoStateMachine() {
     allScenarios: ALL_SCENARIOS,
     triggerScenario,
     advancePhase,
+    stepBack,
     approve,
     reject,
     resetDemo,

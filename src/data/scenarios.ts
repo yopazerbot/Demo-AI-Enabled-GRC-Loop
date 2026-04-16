@@ -158,7 +158,8 @@ export const scenario1: ScenarioData = {
     policy_generated: { actor: 'Control Engineering Agent', action: 'Policy Drafted', detail: 'POL-IAM-2026-012 ready.', phase: 'policy_generated' },
     awaiting_approval: { actor: 'Orchestration', action: 'Approval Gate', detail: 'Awaiting CRO.', phase: 'awaiting_approval' },
     deployment_in_progress: { actor: 'Dr. Elena Vasquez', action: 'Approved', detail: 'Deploying.', phase: 'deployment_in_progress' },
-    deployment_complete: { actor: 'Environment Controller', action: 'Deployed', detail: 'Policy active.', phase: 'deployment_complete' },
+    environment_updated: { actor: 'Environment Controller', action: 'Target State Reached', detail: 'All assets compliant with new policy.', phase: 'environment_updated' },
+    deployment_complete: { actor: 'Board Reporting', action: 'Board Refreshed', detail: 'Risk posture updated; loop closed.', phase: 'deployment_complete' },
   },
 };
 
@@ -320,7 +321,8 @@ export const scenario2: ScenarioData = {
     policy_generated: { actor: 'Control Engineering Agent', action: 'Policy Drafted', detail: 'POL-SDLC-2026-008 ready.', phase: 'policy_generated' },
     awaiting_approval: { actor: 'Orchestration', action: 'Approval Gate', detail: 'Awaiting CRO.', phase: 'awaiting_approval' },
     deployment_in_progress: { actor: 'Dr. Elena Vasquez', action: 'Approved', detail: 'Emergency patch deploying.', phase: 'deployment_in_progress' },
-    deployment_complete: { actor: 'Environment Controller', action: 'Deployed', detail: 'Patch applied. SCA active.', phase: 'deployment_complete' },
+    environment_updated: { actor: 'Environment Controller', action: 'Target State Reached', detail: 'Patch applied. SCA gating active.', phase: 'environment_updated' },
+    deployment_complete: { actor: 'Board Reporting', action: 'Board Refreshed', detail: 'Risk posture updated; loop closed.', phase: 'deployment_complete' },
   },
 };
 

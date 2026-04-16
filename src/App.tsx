@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Header } from './components/Header';
 import { OrgContext } from './components/OrgContext';
 import { ScenarioSwitcher } from './components/ScenarioSwitcher';
@@ -24,6 +25,7 @@ export default function App() {
     allScenarios,
     triggerScenario,
     advancePhase,
+    stepBack,
     approve,
     reject,
     resetDemo,
@@ -41,6 +43,33 @@ export default function App() {
   const executiveState = getPanelState(phase, 'executive');
 
   const demoRunning = phase !== 'idle';
+
+  // Keyboard navigation: arrows to move, R to reset.
+  // Skipped when focus is inside an input/textarea/contenteditable.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        if (phase === 'idle') triggerScenario();
+        else if (phase === 'awaiting_approval') approve();
+        else advancePhase();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        stepBack();
+      } else if (e.key === 'r' || e.key === 'R') {
+        if (phase !== 'idle') {
+          e.preventDefault();
+          resetDemo();
+        }
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [phase, triggerScenario, advancePhase, stepBack, approve, resetDemo]);
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
@@ -79,7 +108,7 @@ export default function App() {
         </div>
       </main>
 
-      <PhaseControls phase={phase} onAdvance={advancePhase} onReset={resetDemo} />
+      <PhaseControls phase={phase} onAdvance={advancePhase} onBack={stepBack} onReset={resetDemo} />
     </div>
   );
 }

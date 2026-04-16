@@ -15,6 +15,7 @@ interface Props {
 const PHASES_WITH_DATA: DemoPhase[] = [
   'awaiting_approval',
   'deployment_in_progress',
+  'environment_updated',
   'deployment_complete',
 ];
 
@@ -76,10 +77,10 @@ function DeploymentAnimation() {
 }
 
 export function EnvironmentPanel({ phase, scenario, isActive, isDimmed }: Props) {
-  const deployed = phase === 'deployment_complete';
+  const showTarget = phase === 'environment_updated' || phase === 'deployment_complete';
   const deploying = phase === 'deployment_in_progress';
   const hasData = PHASES_WITH_DATA.includes(phase);
-  const env = deployed ? scenario.envAfter : scenario.envBefore;
+  const env = showTarget ? scenario.envAfter : scenario.envBefore;
 
   const pct = percentCompliant(env.affectedAssets);
   const compliantCount = env.affectedAssets.filter((a) => a.compliant).length;
@@ -92,9 +93,9 @@ export function EnvironmentPanel({ phase, scenario, isActive, isDimmed }: Props)
       accentColor="text-accent-emerald"
       isActive={isActive}
       isDimmed={isDimmed}
-      badge={deployed ? 'TARGET STATE' : deploying ? 'UPDATING…' : hasData ? 'CURRENT STATE' : undefined}
+      badge={showTarget ? 'TARGET STATE' : deploying ? 'UPDATING…' : hasData ? 'CURRENT STATE' : undefined}
       badgeColor={
-        deployed ? 'bg-accent-emerald/15 text-accent-emerald'
+        showTarget ? 'bg-accent-emerald/15 text-accent-emerald'
         : deploying ? 'bg-accent-blue/15 text-accent-blue'
         : 'bg-accent-amber/15 text-accent-amber'
       }
@@ -106,23 +107,23 @@ export function EnvironmentPanel({ phase, scenario, isActive, isDimmed }: Props)
           </motion.div>
         )}
         {hasData && !deploying && (
-          <motion.div key={`env-${scenario.id}-${deployed}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col gap-4">
+          <motion.div key={`env-${scenario.id}-${showTarget}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col gap-4">
             {/* Headline: assets compliant */}
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mb-1">Critical Assets Compliant</p>
                 <div className="flex items-end gap-2">
-                  <motion.span key={compliantCount} initial={{ opacity: 0.3 }} animate={{ opacity: 1 }} className={`text-4xl font-bold ${deployed ? 'text-accent-emerald' : 'text-slate-200'}`}>
+                  <motion.span key={compliantCount} initial={{ opacity: 0.3 }} animate={{ opacity: 1 }} className={`text-4xl font-bold ${showTarget ? 'text-accent-emerald' : 'text-slate-200'}`}>
                     {compliantCount}
                   </motion.span>
                   <span className="text-xl text-slate-500 mb-1">of {total}</span>
-                  <span className={`text-sm font-semibold mb-1.5 ${deployed ? 'text-accent-emerald' : 'text-slate-400'}`}>
+                  <span className={`text-sm font-semibold mb-1.5 ${showTarget ? 'text-accent-emerald' : 'text-slate-400'}`}>
                     ({pct}%)
                   </span>
                 </div>
                 <div className="w-56 h-2 bg-surface-600 rounded-full overflow-hidden mt-2">
                   <motion.div
-                    className={deployed ? 'h-full bg-gradient-to-r from-accent-emerald/80 to-accent-emerald' : 'h-full bg-gradient-to-r from-accent-amber/80 to-accent-amber'}
+                    className={showTarget ? 'h-full bg-gradient-to-r from-accent-emerald/80 to-accent-emerald' : 'h-full bg-gradient-to-r from-accent-amber/80 to-accent-amber'}
                     initial={{ width: 0 }}
                     animate={{ width: `${pct}%` }}
                     transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}

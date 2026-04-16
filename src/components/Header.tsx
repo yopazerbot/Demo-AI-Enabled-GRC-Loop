@@ -10,6 +10,7 @@ const phaseLabels: Record<DemoPhase, string> = {
   policy_generated: 'Drafting Policy',
   awaiting_approval: 'Awaiting Approval',
   deployment_in_progress: 'Deploying',
+  environment_updated: 'Environment Updated',
   deployment_complete: 'Complete',
 };
 

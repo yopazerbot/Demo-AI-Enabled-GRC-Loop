@@ -12,6 +12,7 @@ export type DemoPhase =
   | 'policy_generated'
   | 'awaiting_approval'
   | 'deployment_in_progress'
+  | 'environment_updated'
   | 'deployment_complete';
 
 // ── Organizational Structure ──
