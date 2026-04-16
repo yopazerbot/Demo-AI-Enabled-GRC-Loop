@@ -1,23 +1,27 @@
 import { Building2, GitBranch, Shield, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { organizations } from '../data/organization';
-import { postApprovalEnvironment } from '../data/environment';
 import type { DemoPhase } from '../types';
+import type { ScenarioData } from '../data/scenarioTypes';
 
 interface Props {
   phase: DemoPhase;
+  scenario: ScenarioData;
 }
 
-export function OrgContext({ phase }: Props) {
+export function OrgContext({ phase, scenario }: Props) {
   const showThreat = phase !== 'idle' && phase !== 'deployment_complete';
   const deployed = phase === 'deployment_complete';
 
   return (
     <div className="flex items-stretch gap-2 px-3 pt-2">
       {organizations.map((org) => {
-        const postEnv = postApprovalEnvironment.find((e) => e.entityId === org.id);
-        const compliance = deployed && postEnv ? postEnv.complianceScore : org.complianceScore;
-        const exposure = deployed ? (org.id === 'northstar-group' ? 18 : 22) : org.riskExposure;
+        const postEnv = scenario.envAfter.find((e) => e.entityId === org.id);
+        const preEnv = scenario.envBefore.find((e) => e.entityId === org.id);
+        const compliance = deployed && postEnv ? postEnv.complianceScore : (preEnv?.complianceScore ?? org.complianceScore);
+        const preMetrics = scenario.metricsBefore.find((m) => m.entityId === org.id);
+        const postMetrics = scenario.metricsAfter.find((m) => m.entityId === org.id);
+        const exposure = deployed ? (postMetrics?.overallRiskScore ?? 18) : (preMetrics?.overallRiskScore ?? org.riskExposure);
 
         return (
           <motion.div

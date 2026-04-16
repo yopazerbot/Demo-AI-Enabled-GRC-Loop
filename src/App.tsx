@@ -1,5 +1,6 @@
 import { Header } from './components/Header';
 import { OrgContext } from './components/OrgContext';
+import { ScenarioSwitcher } from './components/ScenarioSwitcher';
 import { FlowTimeline } from './components/FlowTimeline';
 import { PhaseControls } from './components/PhaseControls';
 import { ThreatFeedPanel } from './components/ThreatFeedPanel';
@@ -17,11 +18,15 @@ export default function App() {
     phase,
     agents,
     approvalStatus,
+    scenario,
+    scenarioIdx,
+    allScenarios,
     triggerScenario,
     advancePhase,
     approve,
     reject,
     resetDemo,
+    switchScenario,
   } = useDemoStateMachine();
 
   const threatState = getPanelState(phase, 'threat');
@@ -32,77 +37,46 @@ export default function App() {
   const environmentState = getPanelState(phase, 'environment');
   const executiveState = getPanelState(phase, 'executive');
 
+  const demoRunning = phase !== 'idle';
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <Header phase={phase} />
-      <OrgContext phase={phase} />
+      <ScenarioSwitcher
+        scenarios={allScenarios}
+        activeIdx={scenarioIdx}
+        onSwitch={switchScenario}
+        disabled={demoRunning}
+      />
+      <OrgContext phase={phase} scenario={scenario} />
       <FlowTimeline phase={phase} />
 
-      {/* Main 2-row grid with 4 columns */}
       <main className="flex-1 overflow-hidden grid grid-cols-4 grid-rows-2 gap-3 p-3">
-        {/* Row 1 */}
         <div className="min-h-0">
-          <ThreatFeedPanel
-            phase={phase}
-            onTrigger={triggerScenario}
-            isActive={threatState.isActive}
-            isDimmed={threatState.isDimmed}
-          />
+          <ThreatFeedPanel phase={phase} scenario={scenario} onTrigger={triggerScenario} isActive={threatState.isActive} isDimmed={threatState.isDimmed} />
         </div>
         <div className="min-h-0">
-          <AgentPanel
-            agents={agents}
-            isActive={agentsState.isActive}
-            isDimmed={agentsState.isDimmed}
-          />
+          <AgentPanel agents={agents} isActive={agentsState.isActive} isDimmed={agentsState.isDimmed} />
         </div>
         <div className="min-h-0">
-          <AnalysisPanel
-            phase={phase}
-            isActive={analysisState.isActive}
-            isDimmed={analysisState.isDimmed}
-          />
+          <AnalysisPanel phase={phase} scenario={scenario} isActive={analysisState.isActive} isDimmed={analysisState.isDimmed} />
         </div>
         <div className="min-h-0">
-          <PolicyPanel
-            phase={phase}
-            isActive={policyState.isActive}
-            isDimmed={policyState.isDimmed}
-          />
+          <PolicyPanel phase={phase} scenario={scenario} isActive={policyState.isActive} isDimmed={policyState.isDimmed} />
         </div>
 
-        {/* Row 2 */}
         <div className="min-h-0">
-          <ApprovalPanel
-            phase={phase}
-            approvalStatus={approvalStatus}
-            onApprove={approve}
-            onReject={reject}
-            isActive={approvalState.isActive}
-            isDimmed={approvalState.isDimmed}
-          />
+          <ApprovalPanel phase={phase} scenario={scenario} approvalStatus={approvalStatus} onApprove={approve} onReject={reject} isActive={approvalState.isActive} isDimmed={approvalState.isDimmed} />
         </div>
         <div className="col-span-2 min-h-0">
-          <EnvironmentPanel
-            phase={phase}
-            isActive={environmentState.isActive}
-            isDimmed={environmentState.isDimmed}
-          />
+          <EnvironmentPanel phase={phase} scenario={scenario} isActive={environmentState.isActive} isDimmed={environmentState.isDimmed} />
         </div>
         <div className="min-h-0">
-          <ExecutivePanel
-            phase={phase}
-            isActive={executiveState.isActive}
-            isDimmed={executiveState.isDimmed}
-          />
+          <ExecutivePanel phase={phase} scenario={scenario} isActive={executiveState.isActive} isDimmed={executiveState.isDimmed} />
         </div>
       </main>
 
-      <PhaseControls
-        phase={phase}
-        onAdvance={advancePhase}
-        onReset={resetDemo}
-      />
+      <PhaseControls phase={phase} onAdvance={advancePhase} onReset={resetDemo} />
     </div>
   );
 }

@@ -1,18 +1,21 @@
 import { Rss, AlertTriangle, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PanelShell } from './PanelShell';
-import { primaryThreatEvent } from '../data/threats';
 import type { DemoPhase } from '../types';
+import type { ScenarioData } from '../data/scenarioTypes';
 
 interface Props {
   phase: DemoPhase;
+  scenario: ScenarioData;
   onTrigger: () => void;
   isActive: boolean;
   isDimmed: boolean;
 }
 
-export function ThreatFeedPanel({ phase, onTrigger, isActive, isDimmed }: Props) {
+export function ThreatFeedPanel({ phase, scenario, onTrigger, isActive, isDimmed }: Props) {
   const hasEvent = phase !== 'idle';
+  const t = scenario.threatSummary;
+  const evt = scenario.threatEvent;
 
   return (
     <PanelShell
@@ -41,7 +44,7 @@ export function ThreatFeedPanel({ phase, onTrigger, isActive, isDimmed }: Props)
               <Rss className="w-8 h-8 text-accent-cyan" />
             </motion.div>
             <p className="text-sm text-slate-400 text-center">
-              Monitoring MISP community feed
+              Monitoring threat intelligence feeds
             </p>
             <button
               onClick={onTrigger}
@@ -53,13 +56,12 @@ export function ThreatFeedPanel({ phase, onTrigger, isActive, isDimmed }: Props)
           </motion.div>
         ) : (
           <motion.div
-            key="event"
+            key={`event-${scenario.id}`}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             className="h-full flex flex-col"
           >
-            {/* Big severity header */}
             <motion.div
               animate={isActive ? { scale: [1, 1.02, 1] } : {}}
               transition={{ duration: 1.5, repeat: isActive ? Infinity : 0 }}
@@ -67,34 +69,32 @@ export function ThreatFeedPanel({ phase, onTrigger, isActive, isDimmed }: Props)
             >
               <AlertTriangle className="w-5 h-5 text-severity-critical" />
               <div className="flex-1">
-                <p className="text-[10px] font-mono text-slate-400">{primaryThreatEvent.id}</p>
+                <p className="text-[10px] font-mono text-slate-400">{evt.id}</p>
                 <p className="text-xs font-bold text-severity-critical uppercase tracking-wider">
-                  Critical · TLP:{primaryThreatEvent.tlp}
+                  Critical · TLP:{evt.tlp}
                 </p>
               </div>
             </motion.div>
 
-            {/* Title - BIG */}
             <p className="text-base font-bold text-white leading-tight mb-3">
-              AI-Assisted Phishing
+              {t.shortTitle}
             </p>
             <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-              Targeting cloud identities & OAuth tokens across Nordic healthcare
+              {t.description}
             </p>
 
-            {/* Key facts - simplified */}
             <div className="space-y-2 mt-auto">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500">Vector</span>
-                <span className="text-slate-300 font-medium">AiTM → OAuth Theft</span>
+                <span className="text-slate-300 font-medium">{t.vector}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500">Affects</span>
-                <span className="text-accent-amber font-semibold">Both Entities</span>
+                <span className="text-accent-amber font-semibold">{t.affects}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500">Source</span>
-                <span className="text-slate-300">Nordic CERT</span>
+                <span className="text-slate-300">{t.source}</span>
               </div>
             </div>
           </motion.div>
