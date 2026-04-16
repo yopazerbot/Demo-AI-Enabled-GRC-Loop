@@ -14,7 +14,7 @@ The demo walks through a complete governance engineering scenario:
 6. **Environment Deployment** — Simulated corporate environment updates
 7. **Executive Summary** — Board-level metrics refresh with before/after comparison
 
-The demo features a fictive enterprise group (Northstar Group + Northstar Health Services subsidiary) to show multi-entity governance, central vs. local control, and group-level vs. entity-specific reporting.
+The demo features a fictive Belgian company (Verhelst Industries) — an NIS2 essential entity in the energy sector, ISO 27001 certified. Two scenarios are included: an AI-assisted phishing campaign and a critical RCE discovered through a bug bounty program.
 
 ## Tech Stack
 

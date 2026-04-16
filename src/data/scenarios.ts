@@ -9,23 +9,23 @@ export const scenario1: ScenarioData = {
   threatEvent: {
     id: 'MISP-2026-04871',
     title: 'AI-Assisted Phishing Campaign Targeting Cloud Identities and OAuth Tokens',
-    description: 'Sophisticated AiTM phishing campaign using LLMs to generate credential-harvesting emails.',
+    description: 'Sophisticated AiTM phishing campaign using LLMs to generate credential-harvesting emails targeting EU energy operators.',
     severity: 'critical',
     confidence: 'high',
     tlp: 'AMBER',
     threatVector: 'Phishing → AiTM Proxy → OAuth Token Theft',
     suggestedMitigation: 'Enforce phishing-resistant MFA for all privileged accounts.',
     timestamp: '2026-04-16T09:14:00Z',
-    source: 'Nordic CERT / MISP Community',
-    affectedEntities: ['northstar'],
+    source: 'CERT.be / MISP Community',
+    affectedEntities: ['verhelst'],
     tags: ['T1566.001', 'AiTM', 'OAuth abuse'],
   },
 
   threatSummary: {
     shortTitle: 'AI-Assisted Phishing',
-    description: 'Targeting cloud identities & OAuth tokens via AiTM proxy',
+    description: 'Targeting cloud identities & OAuth tokens at EU energy operators',
     vector: 'AiTM → OAuth Theft',
-    source: 'Nordic CERT',
+    source: 'CERT.be',
   },
 
   riskMapping: {
@@ -37,7 +37,7 @@ export const scenario1: ScenarioData = {
     isoControlTheme: 'A.8 — Access Control (ISO/IEC 27001:2022)',
     isoControlRef: 'A.8.5 · A.8.2 · A.8.3',
     affectedEntities: [
-      { entityId: 'northstar', entityName: 'Northstar', localExposure: 62, localImpact: 'Legacy MFA on 23% of admin accounts.' },
+      { entityId: 'verhelst', entityName: 'Verhelst Industries', localExposure: 62, localImpact: 'Legacy MFA on 23% of admin accounts.' },
     ],
   },
 
@@ -57,7 +57,7 @@ export const scenario1: ScenarioData = {
     humanReadable: '',
     policyAsCode: '',
     effectiveDate: '2026-04-16',
-    rationale: 'Active AiTM phishing campaign targeting the Nordic region.',
+    rationale: 'Active AiTM phishing campaign targeting EU energy sector.',
   },
 
   policySummary: {
@@ -80,7 +80,7 @@ export const scenario1: ScenarioData = {
     businessFrictionWarning: '3-5 day FIDO2 enrollment for ~25% of users.',
     approverName: 'Dr. Elena Vasquez',
     approverRole: 'Chief Risk Officer',
-    impactedEntities: ['Northstar'],
+    impactedEntities: ['Verhelst Industries'],
     status: 'pending',
   },
 
@@ -90,7 +90,7 @@ export const scenario1: ScenarioData = {
   },
 
   envBefore: {
-    entityId: 'northstar', entityName: 'Northstar', complianceScore: 74,
+    entityId: 'verhelst', entityName: 'Verhelst Industries', complianceScore: 74,
     policyAssignments: [], affectedAssets: [
       { id: 'A1', name: 'Azure AD Tenant', type: 'Identity Provider', compliant: false, lastChecked: '' },
       { id: 'A2', name: 'Exchange Online', type: 'Collaboration', compliant: true, lastChecked: '' },
@@ -101,7 +101,7 @@ export const scenario1: ScenarioData = {
   },
 
   envAfter: {
-    entityId: 'northstar', entityName: 'Northstar', complianceScore: 91,
+    entityId: 'verhelst', entityName: 'Verhelst Industries', complianceScore: 91,
     policyAssignments: [], affectedAssets: [
       { id: 'A1', name: 'Azure AD Tenant', type: 'Identity Provider', compliant: true, lastChecked: '' },
       { id: 'A2', name: 'Exchange Online', type: 'Collaboration', compliant: true, lastChecked: '' },
@@ -112,12 +112,12 @@ export const scenario1: ScenarioData = {
   },
 
   metricsBefore: {
-    entityId: 'northstar', entityName: 'Northstar', overallRiskScore: 34, compliancePosture: 74, openFindings: 12, controlCoverage: 72,
+    entityId: 'verhelst', entityName: 'Verhelst Industries', overallRiskScore: 34, compliancePosture: 74, openFindings: 12, controlCoverage: 72,
     exposureTrend: [28, 30, 29, 32, 33, 34], complianceTrend: [80, 79, 78, 76, 75, 74],
   },
 
   metricsAfter: {
-    entityId: 'northstar', entityName: 'Northstar', overallRiskScore: 12, compliancePosture: 91, openFindings: 4, controlCoverage: 90,
+    entityId: 'verhelst', entityName: 'Verhelst Industries', overallRiskScore: 12, compliancePosture: 91, openFindings: 4, controlCoverage: 90,
     exposureTrend: [30, 32, 33, 34, 22, 12], complianceTrend: [79, 78, 76, 74, 84, 91],
   },
 
@@ -154,8 +154,8 @@ export const scenario2: ScenarioData = {
     threatVector: 'Malicious JWT → Deserialization → Remote Code Execution',
     suggestedMitigation: 'Patch dependency to v4.2.1. Enforce SCA gating. Deploy WAF rule.',
     timestamp: '2026-04-16T11:22:00Z',
-    source: 'Northstar Bug Bounty Program',
-    affectedEntities: ['northstar'],
+    source: 'Verhelst Bug Bounty Program',
+    affectedEntities: ['verhelst'],
     tags: ['CVE-2026-31847', 'RCE', 'Deserialization', 'Supply chain'],
   },
 
@@ -175,7 +175,7 @@ export const scenario2: ScenarioData = {
     isoControlTheme: 'A.8.25–28 — Secure Development (ISO/IEC 27001:2022)',
     isoControlRef: 'A.8.25 · A.8.28 · A.8.8',
     affectedEntities: [
-      { entityId: 'northstar', entityName: 'Northstar', localExposure: 78, localImpact: '14 services use the vulnerable library. No SCA gate in CI/CD.' },
+      { entityId: 'verhelst', entityName: 'Verhelst Industries', localExposure: 78, localImpact: '14 services use the vulnerable library. No SCA gate in CI/CD.' },
     ],
   },
 
@@ -218,7 +218,7 @@ export const scenario2: ScenarioData = {
     businessFrictionWarning: 'Emergency maintenance window. 2 CI/CD pipelines blocked until SCA integrated.',
     approverName: 'Dr. Elena Vasquez',
     approverRole: 'Chief Risk Officer',
-    impactedEntities: ['Northstar'],
+    impactedEntities: ['Verhelst Industries'],
     status: 'pending',
   },
 
@@ -228,7 +228,7 @@ export const scenario2: ScenarioData = {
   },
 
   envBefore: {
-    entityId: 'northstar', entityName: 'Northstar', complianceScore: 68,
+    entityId: 'verhelst', entityName: 'Verhelst Industries', complianceScore: 68,
     policyAssignments: [], affectedAssets: [
       { id: 'S1', name: 'CI/CD Platform', type: 'DevOps', compliant: false, lastChecked: '' },
       { id: 'S2', name: 'API Gateway', type: 'Service', compliant: false, lastChecked: '' },
@@ -239,7 +239,7 @@ export const scenario2: ScenarioData = {
   },
 
   envAfter: {
-    entityId: 'northstar', entityName: 'Northstar', complianceScore: 92,
+    entityId: 'verhelst', entityName: 'Verhelst Industries', complianceScore: 92,
     policyAssignments: [], affectedAssets: [
       { id: 'S1', name: 'CI/CD Platform', type: 'DevOps', compliant: true, lastChecked: '' },
       { id: 'S2', name: 'API Gateway', type: 'Service', compliant: true, lastChecked: '' },
@@ -250,12 +250,12 @@ export const scenario2: ScenarioData = {
   },
 
   metricsBefore: {
-    entityId: 'northstar', entityName: 'Northstar', overallRiskScore: 46, compliancePosture: 68, openFindings: 14, controlCoverage: 65,
+    entityId: 'verhelst', entityName: 'Verhelst Industries', overallRiskScore: 46, compliancePosture: 68, openFindings: 14, controlCoverage: 65,
     exposureTrend: [35, 37, 39, 41, 44, 46], complianceTrend: [76, 74, 72, 71, 69, 68],
   },
 
   metricsAfter: {
-    entityId: 'northstar', entityName: 'Northstar', overallRiskScore: 11, compliancePosture: 92, openFindings: 3, controlCoverage: 93,
+    entityId: 'verhelst', entityName: 'Verhelst Industries', overallRiskScore: 11, compliancePosture: 92, openFindings: 3, controlCoverage: 93,
     exposureTrend: [37, 39, 41, 46, 28, 11], complianceTrend: [74, 72, 71, 68, 82, 92],
   },
 

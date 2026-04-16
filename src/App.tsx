@@ -1,4 +1,5 @@
 import { Header } from './components/Header';
+import { OrgContext } from './components/OrgContext';
 import { ScenarioSwitcher } from './components/ScenarioSwitcher';
 import { FlowTimeline } from './components/FlowTimeline';
 import { PhaseControls } from './components/PhaseControls';
@@ -41,6 +42,7 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <Header phase={phase} />
+      <OrgContext phase={phase} />
       <ScenarioSwitcher
         scenarios={allScenarios}
         activeIdx={scenarioIdx}

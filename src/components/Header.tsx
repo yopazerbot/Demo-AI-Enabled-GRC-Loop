@@ -43,7 +43,7 @@ export function Header({ phase }: HeaderProps) {
           <span className="text-[10px] text-slate-300 font-semibold">AI Orchestration</span>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-700/50 border border-surface-border">
-          <span className="text-[10px] text-slate-300 font-medium">Northstar</span>
+          <span className="text-[10px] text-slate-300 font-medium">Verhelst Industries</span>
         </div>
       </div>
     </header>
