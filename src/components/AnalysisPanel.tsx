@@ -4,7 +4,7 @@ import { PanelShell } from './PanelShell';
 import type { DemoPhase } from '../types';
 import type { ScenarioData } from '../data/scenarioTypes';
 
-const VISIBLE_PHASES: DemoPhase[] = ['risk_mapped', 'policy_generated', 'awaiting_approval', 'deployment_in_progress', 'deployment_complete'];
+const VISIBLE_PHASES: DemoPhase[] = ['risk_mapped', 'policy_generated', 'awaiting_approval', 'deployment_in_progress', 'environment_updated', 'deployment_complete'];
 
 const LEVEL_COLORS: Record<string, string> = {
   'Very High': 'text-severity-critical bg-severity-critical/15 border-severity-critical/30',

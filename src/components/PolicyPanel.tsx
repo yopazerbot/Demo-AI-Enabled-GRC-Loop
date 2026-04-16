@@ -4,7 +4,7 @@ import { PanelShell } from './PanelShell';
 import type { DemoPhase } from '../types';
 import type { ScenarioData } from '../data/scenarioTypes';
 
-const VISIBLE_PHASES: DemoPhase[] = ['policy_generated', 'awaiting_approval', 'deployment_in_progress', 'deployment_complete'];
+const VISIBLE_PHASES: DemoPhase[] = ['policy_generated', 'awaiting_approval', 'deployment_in_progress', 'environment_updated', 'deployment_complete'];
 
 const ICON_MAP = {
   fingerprint: Fingerprint,

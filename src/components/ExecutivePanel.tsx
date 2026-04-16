@@ -45,7 +45,7 @@ function RiskBlock({ level, label }: { level: RiskLevel; label: string }) {
   );
 }
 
-const PHASES_WITH_DATA: DemoPhase[] = ['risk_mapped', 'policy_generated', 'awaiting_approval', 'deployment_in_progress', 'deployment_complete'];
+const PHASES_WITH_DATA: DemoPhase[] = ['risk_mapped', 'policy_generated', 'awaiting_approval', 'deployment_in_progress', 'environment_updated', 'deployment_complete'];
 
 export function ExecutivePanel({ phase, scenario, isActive, isDimmed }: Props) {
   const deployed = phase === 'deployment_complete';

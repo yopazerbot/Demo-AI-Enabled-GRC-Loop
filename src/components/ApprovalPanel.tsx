@@ -16,7 +16,7 @@ interface Props {
 
 export function ApprovalPanel({ phase, scenario, approvalStatus, onApprove, onReject, isActive, isDimmed }: Props) {
   const active = phase === 'awaiting_approval';
-  const resolved = ['deployment_in_progress', 'deployment_complete'].includes(phase);
+  const resolved = ['deployment_in_progress', 'environment_updated', 'deployment_complete'].includes(phase);
   const a = scenario.approvalSummary;
   const appr = scenario.approval;
 
