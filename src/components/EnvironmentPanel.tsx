@@ -1,153 +1,36 @@
-import { useState } from 'react';
 import {
   Server,
   Building2,
   GitBranch,
   CheckCircle2,
   XCircle,
-  Clock,
-  FileCheck,
-  HardDrive,
-  Wrench,
+  Loader2,
+  TrendingUp,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PanelShell } from './PanelShell';
 import { initialEnvironment, postApprovalEnvironment } from '../data/environment';
-import type { DemoPhase, EnvironmentState } from '../types';
-
-type EntityTab = 'northstar-group' | 'northstar-health';
-
-const policyStatusColor: Record<string, string> = {
-  active: 'text-accent-emerald bg-accent-emerald/10',
-  pending: 'text-accent-amber bg-accent-amber/10',
-  not_assigned: 'text-slate-500 bg-surface-600',
-};
-
-function EnvironmentView({ env }: { env: EnvironmentState }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-3"
-    >
-      {/* Compliance score */}
-      <div className="panel-inner p-3">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[9px] uppercase tracking-wider text-slate-500">Compliance Score</span>
-          <span className={`text-lg font-bold ${env.complianceScore >= 85 ? 'text-accent-emerald' : env.complianceScore >= 70 ? 'text-accent-amber' : 'text-severity-high'}`}>
-            {env.complianceScore}%
-          </span>
-        </div>
-        <div className="w-full h-2 bg-surface-600 rounded-full overflow-hidden">
-          <motion.div
-            className={`h-full rounded-full ${
-              env.complianceScore >= 85
-                ? 'bg-gradient-to-r from-accent-emerald/80 to-accent-emerald'
-                : env.complianceScore >= 70
-                  ? 'bg-gradient-to-r from-accent-amber/80 to-accent-amber'
-                  : 'bg-gradient-to-r from-severity-high/80 to-severity-high'
-            }`}
-            initial={{ width: 0 }}
-            animate={{ width: `${env.complianceScore}%` }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          />
-        </div>
-      </div>
-
-      {/* Policy assignments */}
-      <div>
-        <div className="flex items-center gap-1.5 mb-1.5">
-          <FileCheck className="w-3 h-3 text-slate-500" />
-          <span className="text-[9px] uppercase tracking-wider text-slate-500">Policy Assignments</span>
-        </div>
-        <div className="space-y-1">
-          {env.policyAssignments.map((pa) => (
-            <div key={pa.policyId} className="panel-inner px-2.5 py-1.5 flex items-center gap-2">
-              <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${policyStatusColor[pa.status]}`}>
-                {pa.status === 'not_assigned' ? 'N/A' : pa.status}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-slate-300 truncate">{pa.policyName}</p>
-                <p className="text-[9px] text-slate-500">{pa.assignedScope}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Affected assets */}
-      <div>
-        <div className="flex items-center gap-1.5 mb-1.5">
-          <HardDrive className="w-3 h-3 text-slate-500" />
-          <span className="text-[9px] uppercase tracking-wider text-slate-500">Affected Assets</span>
-        </div>
-        <div className="grid grid-cols-2 gap-1">
-          {env.affectedAssets.map((asset) => (
-            <div key={asset.id} className="panel-inner px-2.5 py-1.5 flex items-center gap-2">
-              {asset.compliant ? (
-                <CheckCircle2 className="w-3 h-3 text-accent-emerald shrink-0" />
-              ) : (
-                <XCircle className="w-3 h-3 text-severity-high shrink-0" />
-              )}
-              <div className="min-w-0">
-                <p className="text-[10px] text-slate-300 truncate">{asset.name}</p>
-                <p className="text-[9px] text-slate-500">{asset.type}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Remediation */}
-      <div>
-        <div className="flex items-center gap-1.5 mb-1.5">
-          <Wrench className="w-3 h-3 text-slate-500" />
-          <span className="text-[9px] uppercase tracking-wider text-slate-500">Remediation Status</span>
-        </div>
-        <div className="space-y-1">
-          {env.remediationStatus.map((rem) => (
-            <div key={rem.id} className="panel-inner px-2.5 py-1.5 flex items-center gap-2">
-              {rem.status === 'complete' ? (
-                <CheckCircle2 className="w-3 h-3 text-accent-emerald shrink-0" />
-              ) : rem.status === 'in_progress' ? (
-                <Clock className="w-3 h-3 text-accent-blue shrink-0 animate-pulse" />
-              ) : (
-                <Clock className="w-3 h-3 text-slate-500 shrink-0" />
-              )}
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-slate-300 truncate">{rem.description}</p>
-                <p className="text-[9px] text-slate-500">{rem.assignedTo}</p>
-              </div>
-              <span className={`text-[9px] font-medium uppercase shrink-0 ${
-                rem.status === 'complete' ? 'text-accent-emerald' : rem.status === 'in_progress' ? 'text-accent-blue' : 'text-slate-500'
-              }`}>
-                {rem.status.replace('_', ' ')}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
+import type { DemoPhase } from '../types';
 
 interface Props {
   phase: DemoPhase;
+  isActive: boolean;
+  isDimmed: boolean;
 }
 
-export function EnvironmentPanel({ phase }: Props) {
-  const [activeTab, setActiveTab] = useState<EntityTab>('northstar-group');
+export function EnvironmentPanel({ phase, isActive, isDimmed }: Props) {
   const deployed = phase === 'deployment_complete';
   const deploying = phase === 'deployment_in_progress';
   const envData = deployed ? postApprovalEnvironment : initialEnvironment;
-  const currentEnv = envData.find((e) => e.entityId === activeTab);
+  const showData = phase !== 'idle' && !deploying;
 
   return (
     <PanelShell
       title="Corporate Environment"
       icon={Server}
       accentColor="text-accent-emerald"
+      isActive={isActive}
+      isDimmed={isDimmed}
       badge={deployed ? 'UPDATED' : deploying ? 'DEPLOYING' : undefined}
       badgeColor={deployed ? 'bg-accent-emerald/15 text-accent-emerald' : 'bg-accent-blue/15 text-accent-blue'}
     >
@@ -158,60 +41,120 @@ export function EnvironmentPanel({ phase }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center h-full gap-3"
+            className="flex flex-col items-center justify-center h-full gap-4"
           >
-            <div className="w-10 h-10 border-2 border-accent-blue/30 border-t-accent-blue rounded-full animate-spin" />
-            <p className="text-xs text-slate-300 font-medium">Deploying policy to corporate environment…</p>
-            <div className="flex gap-2 mt-1">
-              {['Northstar Group', 'Northstar Health Services'].map((name) => (
-                <span key={name} className="text-[10px] px-2 py-0.5 rounded-full bg-accent-blue/10 text-accent-blue border border-accent-blue/20">
-                  {name}
-                </span>
-              ))}
+            <Loader2 className="w-12 h-12 text-accent-blue animate-spin" />
+            <p className="text-sm font-semibold text-white">Deploying policy…</p>
+            <div className="flex flex-col gap-1.5">
+              <motion.div
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="flex items-center gap-2 text-xs text-slate-300"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse" />
+                Northstar Group
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 }}
+                className="flex items-center gap-2 text-xs text-slate-300"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse" />
+                Northstar Health Services
+              </motion.div>
             </div>
           </motion.div>
         )}
 
-        {(deployed || (!deploying && phase !== 'idle')) && (
+        {showData && (
           <motion.div
-            key="env-view"
+            key={`env-${deployed}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col h-full"
+            className="h-full flex flex-col gap-2.5"
           >
-            {/* Entity tabs */}
-            <div className="flex items-center gap-1 p-0.5 bg-surface-700 rounded-lg border border-surface-border mb-3 self-start">
-              <button
-                onClick={() => setActiveTab('northstar-group')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-medium transition-all cursor-pointer ${
-                  activeTab === 'northstar-group'
-                    ? 'bg-accent-indigo/15 text-accent-indigo border border-accent-indigo/25'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <Building2 className="w-3 h-3" />
-                Northstar Group
-              </button>
-              <button
-                onClick={() => setActiveTab('northstar-health')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-medium transition-all cursor-pointer ${
-                  activeTab === 'northstar-health'
-                    ? 'bg-accent-purple/15 text-accent-purple border border-accent-purple/25'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <GitBranch className="w-3 h-3" />
-                Northstar Health
-              </button>
-            </div>
+            {envData.map((env, i) => {
+              const isGroup = env.entityId === 'northstar-group';
+              const prevScore = initialEnvironment.find((e) => e.entityId === env.entityId)?.complianceScore ?? 0;
+              const delta = env.complianceScore - prevScore;
+              const compliantCount = env.affectedAssets.filter((a) => a.compliant).length;
 
-            {/* Environment view */}
-            <div className="flex-1 overflow-auto">
-              {currentEnv && (
-                <EnvironmentView key={`${activeTab}-${deployed}`} env={currentEnv} />
-              )}
-            </div>
+              return (
+                <motion.div
+                  key={env.entityId}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="flex-1 p-3 rounded-lg bg-surface-700/50 border border-surface-border"
+                >
+                  {/* Entity name */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      {isGroup
+                        ? <Building2 className="w-4 h-4 text-accent-indigo" />
+                        : <GitBranch className="w-4 h-4 text-accent-purple" />
+                      }
+                      <span className="text-xs font-semibold text-slate-200">
+                        {isGroup ? 'Northstar Group' : 'Northstar Health'}
+                      </span>
+                    </div>
+                    {deployed && delta > 0 && (
+                      <motion.span
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.4 + i * 0.15 }}
+                        className="flex items-center gap-0.5 text-[10px] font-bold text-accent-emerald bg-accent-emerald/10 px-1.5 py-0.5 rounded"
+                      >
+                        <TrendingUp className="w-3 h-3" />
+                        +{delta}%
+                      </motion.span>
+                    )}
+                  </div>
+
+                  {/* BIG compliance score */}
+                  <div className="flex items-end gap-1 mb-2">
+                    <motion.span
+                      key={env.complianceScore}
+                      initial={{ opacity: 0.3 }}
+                      animate={{ opacity: 1 }}
+                      className={`text-3xl font-bold ${deployed ? 'text-accent-emerald' : 'text-slate-200'}`}
+                    >
+                      {env.complianceScore}
+                    </motion.span>
+                    <span className="text-sm text-slate-500 mb-1">%</span>
+                    <span className="text-[10px] text-slate-500 ml-1.5 mb-1.5 uppercase tracking-wider">compliant</span>
+                  </div>
+
+                  {/* Compliance bar */}
+                  <div className="w-full h-1.5 bg-surface-600 rounded-full overflow-hidden mb-2">
+                    <motion.div
+                      className={deployed
+                        ? 'h-full bg-gradient-to-r from-accent-emerald/80 to-accent-emerald'
+                        : 'h-full bg-gradient-to-r from-accent-amber/80 to-accent-amber'
+                      }
+                      initial={{ width: 0 }}
+                      animate={{ width: `${env.complianceScore}%` }}
+                      transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+                    />
+                  </div>
+
+                  {/* Asset summary */}
+                  <div className="flex items-center gap-3 text-[11px] text-slate-400">
+                    <span className="flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3 text-accent-emerald" />
+                      {compliantCount}/{env.affectedAssets.length} assets
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <XCircle className="w-3 h-3 text-slate-500" />
+                      {env.affectedAssets.length - compliantCount} open
+                    </span>
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
         )}
 
@@ -222,9 +165,7 @@ export function EnvironmentPanel({ phase }: Props) {
             animate={{ opacity: 1 }}
             className="flex items-center justify-center h-full"
           >
-            <p className="text-xs text-slate-500">
-              Awaiting approved deployment
-            </p>
+            <p className="text-sm text-slate-600">Awaiting deployment</p>
           </motion.div>
         )}
       </AnimatePresence>

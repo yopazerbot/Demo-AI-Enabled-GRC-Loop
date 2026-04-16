@@ -1,17 +1,12 @@
 import {
   ShieldCheck,
   AlertTriangle,
-  Building2,
   User,
-  Target,
-  Scale,
   CheckCircle2,
   XCircle,
-  Clock,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PanelShell } from './PanelShell';
-import { scenarioApproval } from '../data/approval';
 import type { DemoPhase } from '../types';
 
 interface Props {
@@ -19,17 +14,18 @@ interface Props {
   approvalStatus: 'pending' | 'approved' | 'rejected';
   onApprove: () => void;
   onReject: () => void;
+  isActive: boolean;
+  isDimmed: boolean;
 }
 
-export function ApprovalPanel({ phase, approvalStatus, onApprove, onReject }: Props) {
+export function ApprovalPanel({ phase, approvalStatus, onApprove, onReject, isActive, isDimmed }: Props) {
   const active = phase === 'awaiting_approval';
   const resolved = ['deployment_in_progress', 'deployment_complete'].includes(phase);
-  const approval = scenarioApproval;
 
   const badgeText = resolved
     ? approvalStatus === 'approved' ? 'APPROVED' : 'REJECTED'
     : active
-      ? 'ACTION REQUIRED'
+      ? 'ACTION NEEDED'
       : undefined;
 
   const badgeColor = resolved && approvalStatus === 'approved'
@@ -43,139 +39,91 @@ export function ApprovalPanel({ phase, approvalStatus, onApprove, onReject }: Pr
       title="Governance Approval"
       icon={ShieldCheck}
       accentColor="text-accent-amber"
+      isActive={isActive}
+      isDimmed={isDimmed}
       badge={badgeText}
       badgeColor={badgeColor}
     >
       <AnimatePresence mode="wait">
-        {(active || resolved) && (
+        {active && (
           <motion.div
-            key="approval-content"
+            key="active"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            className="flex flex-col gap-3 h-full overflow-auto"
+            className="flex flex-col h-full justify-between gap-3"
           >
-            {/* Approval header */}
-            <div className={`panel-inner p-3 border-l-4 ${
-              resolved && approvalStatus === 'approved'
-                ? 'border-l-accent-emerald'
-                : resolved && approvalStatus === 'rejected'
-                  ? 'border-l-accent-red'
-                  : 'border-l-accent-amber'
-            }`}>
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className="text-[10px] font-mono text-slate-400">{approval.id}</span>
-                {active && (
-                  <motion.span
-                    animate={{ opacity: [1, 0.5, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="text-[9px] font-bold text-accent-amber bg-accent-amber/10 px-1.5 py-0.5 rounded"
-                  >
-                    PENDING HUMAN DECISION
-                  </motion.span>
-                )}
-                {resolved && approvalStatus === 'approved' && (
-                  <span className="text-[9px] font-bold text-accent-emerald bg-accent-emerald/10 px-1.5 py-0.5 rounded flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> APPROVED
-                  </span>
-                )}
-              </div>
-              <p className="text-[11px] text-slate-300 leading-relaxed">
-                {approval.reasonForChange}
-              </p>
-            </div>
-
-            {/* Info grid */}
-            <div className="grid grid-cols-2 gap-2">
-              {/* Scope */}
-              <div className="panel-inner p-2.5">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <Target className="w-3 h-3 text-accent-cyan" />
-                  <span className="text-[9px] uppercase tracking-wider text-slate-500">Scope</span>
-                </div>
-                <p className="text-[10px] text-accent-cyan font-medium">{approval.scopeLabel}</p>
-              </div>
-
+            <div>
               {/* Approver */}
-              <div className="panel-inner p-2.5">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <User className="w-3 h-3 text-slate-400" />
-                  <span className="text-[9px] uppercase tracking-wider text-slate-500">Approver</span>
+              <div className="flex items-center gap-2.5 mb-3 p-2.5 rounded-lg bg-surface-700/50">
+                <div className="w-9 h-9 rounded-full bg-accent-amber/15 border border-accent-amber/30 flex items-center justify-center">
+                  <User className="w-4 h-4 text-accent-amber" />
                 </div>
-                <p className="text-[10px] text-slate-200 font-medium">{approval.approverName}</p>
-                <p className="text-[9px] text-slate-500">{approval.approverRole}</p>
+                <div>
+                  <p className="text-xs font-semibold text-slate-200">Dr. Elena Vasquez</p>
+                  <p className="text-[10px] text-slate-400">Group Chief Risk Officer</p>
+                </div>
+              </div>
+
+              {/* Reason - short */}
+              <p className="text-xs text-slate-300 leading-relaxed mb-3">
+                Approve phishing-resistant MFA policy to mitigate active AiTM campaign.
+              </p>
+
+              {/* Friction warning */}
+              <div className="flex items-start gap-2 p-2.5 rounded-lg bg-accent-amber/10 border border-accent-amber/25">
+                <AlertTriangle className="w-3.5 h-3.5 text-accent-amber shrink-0 mt-0.5" />
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  <span className="font-semibold text-accent-amber">Friction:</span> 3-5 day FIDO2 enrollment for ~25% of users.
+                </p>
               </div>
             </div>
 
-            {/* Expected impact */}
-            <div className="panel-inner p-2.5">
-              <div className="flex items-center gap-1.5 mb-1">
-                <Scale className="w-3 h-3 text-accent-emerald" />
-                <span className="text-[9px] uppercase tracking-wider text-slate-500">Expected Impact</span>
-              </div>
-              <p className="text-[10px] text-slate-300 leading-relaxed">{approval.expectedImpact}</p>
-            </div>
-
-            {/* Business friction warning */}
-            <div className="panel-inner p-2.5 border-l-2 border-l-accent-amber/50">
-              <div className="flex items-center gap-1.5 mb-1">
-                <AlertTriangle className="w-3 h-3 text-accent-amber" />
-                <span className="text-[9px] uppercase tracking-wider text-accent-amber">Business Friction Warning</span>
-              </div>
-              <p className="text-[10px] text-slate-400 leading-relaxed">{approval.businessFrictionWarning}</p>
-            </div>
-
-            {/* Impacted entities */}
-            <div className="panel-inner p-2.5">
-              <div className="flex items-center gap-1.5 mb-1.5">
-                <Building2 className="w-3 h-3 text-slate-400" />
-                <span className="text-[9px] uppercase tracking-wider text-slate-500">Impacted Entities</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {approval.impactedEntities.map((entity) => (
-                  <span
-                    key={entity}
-                    className="text-[10px] px-2 py-0.5 rounded-full bg-surface-600 text-slate-300 border border-surface-border"
-                  >
-                    {entity}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            {active && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="flex items-center gap-3 pt-1"
+            {/* Action buttons - BIG */}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="grid grid-cols-2 gap-2"
+            >
+              <button
+                onClick={onApprove}
+                className="flex items-center justify-center gap-2 py-3 bg-accent-emerald/20 hover:bg-accent-emerald/30 border border-accent-emerald/40 rounded-lg text-accent-emerald font-bold transition-all cursor-pointer shadow-[0_0_20px_rgba(16,185,129,0.15)]"
               >
-                <button
-                  onClick={onApprove}
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-accent-emerald/15 hover:bg-accent-emerald/25 border border-accent-emerald/30 hover:border-accent-emerald/50 rounded-lg text-accent-emerald text-sm font-semibold transition-all cursor-pointer"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  Approve & Deploy
-                </button>
-                <button
-                  onClick={onReject}
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-accent-red/10 hover:bg-accent-red/20 border border-accent-red/25 hover:border-accent-red/40 rounded-lg text-accent-red/80 text-sm font-medium transition-all cursor-pointer"
-                >
-                  <XCircle className="w-4 h-4" />
-                  Reject
-                </button>
-              </motion.div>
-            )}
+                <CheckCircle2 className="w-5 h-5" />
+                Approve
+              </button>
+              <button
+                onClick={onReject}
+                className="flex items-center justify-center gap-2 py-3 bg-surface-700 hover:bg-accent-red/15 border border-surface-border hover:border-accent-red/30 rounded-lg text-slate-400 hover:text-accent-red font-medium transition-all cursor-pointer"
+              >
+                <XCircle className="w-4 h-4" />
+                Reject
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
 
-            {/* Resolved timestamp */}
-            {resolved && (
-              <div className="flex items-center gap-1.5 text-[10px] text-slate-500">
-                <Clock className="w-3 h-3" />
-                <span>Decision recorded at {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
-              </div>
-            )}
+        {resolved && (
+          <motion.div
+            key="resolved"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex flex-col items-center justify-center h-full gap-3"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+              className="w-16 h-16 rounded-full bg-accent-emerald/15 border-2 border-accent-emerald/40 flex items-center justify-center"
+            >
+              <CheckCircle2 className="w-8 h-8 text-accent-emerald" />
+            </motion.div>
+            <div className="text-center">
+              <p className="text-sm font-bold text-white">Approved</p>
+              <p className="text-[11px] text-slate-400 mt-1">Dr. Elena Vasquez · CRO</p>
+            </div>
           </motion.div>
         )}
 
@@ -186,9 +134,7 @@ export function ApprovalPanel({ phase, approvalStatus, onApprove, onReject }: Pr
             animate={{ opacity: 1 }}
             className="flex items-center justify-center h-full"
           >
-            <p className="text-xs text-slate-500">
-              Awaiting policy generation
-            </p>
+            <p className="text-sm text-slate-600">Waiting for policy draft</p>
           </motion.div>
         )}
       </AnimatePresence>

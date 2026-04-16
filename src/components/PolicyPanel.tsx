@@ -1,9 +1,7 @@
-import { useState } from 'react';
-import { FileCode, FileText, ArrowLeftRight, GitBranch, Building2, Globe } from 'lucide-react';
+import { FileCode, GitBranch, Shield, Key, Fingerprint } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PanelShell } from './PanelShell';
-import { scenarioPolicy } from '../data/policy';
-import type { DemoPhase, PolicyScope } from '../types';
+import type { DemoPhase } from '../types';
 
 const VISIBLE_PHASES: DemoPhase[] = [
   'policy_generated',
@@ -12,99 +10,25 @@ const VISIBLE_PHASES: DemoPhase[] = [
   'deployment_complete',
 ];
 
-const scopeConfig: Record<PolicyScope, { icon: typeof Globe; label: string; color: string }> = {
-  group: { icon: Globe, label: 'Group-Wide', color: 'text-accent-indigo bg-accent-indigo/10 border-accent-indigo/25' },
-  subsidiary: { icon: Building2, label: 'Subsidiary Only', color: 'text-accent-purple bg-accent-purple/10 border-accent-purple/25' },
-  group_with_local_override: { icon: GitBranch, label: 'Group + Local Override', color: 'text-accent-cyan bg-accent-cyan/10 border-accent-cyan/25' },
-};
-
-function PolicyMarkdown({ text, isNew }: { text: string; isNew?: boolean }) {
-  // Simple markdown-like rendering for the policy text
-  const lines = text.split('\n');
-
-  return (
-    <div className="space-y-1">
-      {lines.map((line, i) => {
-        const trimmed = line.trim();
-        if (!trimmed) return <div key={i} className="h-1" />;
-
-        // Bold headings
-        if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
-          return (
-            <p key={i} className="text-[11px] font-bold text-slate-200">
-              {trimmed.replace(/\*\*/g, '')}
-            </p>
-          );
-        }
-
-        // Numbered items
-        if (/^\d+\./.test(trimmed)) {
-          return (
-            <div key={i} className={`text-[10px] leading-relaxed pl-2 border-l-2 ${
-              isNew ? 'border-accent-emerald/30 text-slate-300' : 'border-surface-border text-slate-400'
-            }`}>
-              {trimmed}
-            </div>
-          );
-        }
-
-        // Bold inline text
-        if (trimmed.includes('**')) {
-          const parts = trimmed.split(/(\*\*.*?\*\*)/g);
-          return (
-            <p key={i} className="text-[10px] text-slate-400 leading-relaxed">
-              {parts.map((part, pi) =>
-                part.startsWith('**') && part.endsWith('**')
-                  ? <span key={pi} className="font-semibold text-slate-200">{part.replace(/\*\*/g, '')}</span>
-                  : part
-              )}
-            </p>
-          );
-        }
-
-        return (
-          <p key={i} className="text-[10px] text-slate-400 leading-relaxed">
-            {trimmed}
-          </p>
-        );
-      })}
-    </div>
-  );
-}
-
-function CodeBlock({ code, isNew }: { code: string; isNew?: boolean }) {
-  return (
-    <pre className={`text-[9px] leading-relaxed font-mono overflow-auto p-3 rounded-lg border ${
-      isNew
-        ? 'bg-accent-cyan/5 border-accent-cyan/15 text-accent-cyan/80'
-        : 'bg-surface-900/50 border-surface-border text-slate-400'
-    }`}>
-      {code}
-    </pre>
-  );
-}
-
-type ViewMode = 'new' | 'previous' | 'diff';
-
 interface Props {
   phase: DemoPhase;
+  isActive: boolean;
+  isDimmed: boolean;
 }
 
-export function PolicyPanel({ phase }: Props) {
+export function PolicyPanel({ phase, isActive, isDimmed }: Props) {
   const active = VISIBLE_PHASES.includes(phase);
   const generating = phase === 'risk_mapped';
-  const [viewMode, setViewMode] = useState<ViewMode>('new');
-  const policy = scenarioPolicy;
-  const scopeCfg = scopeConfig[policy.scope];
-  const ScopeIcon = scopeCfg.icon;
 
   return (
     <PanelShell
       title="Policy Studio"
       icon={FileCode}
       accentColor="text-accent-purple"
-      badge={active ? policy.policyId : generating ? 'GENERATING' : undefined}
-      badgeColor={active ? 'bg-accent-purple/15 text-accent-purple' : 'bg-accent-blue/15 text-accent-blue'}
+      isActive={isActive}
+      isDimmed={isDimmed}
+      badge={active ? 'DRAFTED' : generating ? '…' : undefined}
+      badgeColor="bg-accent-purple/15 text-accent-purple"
     >
       <AnimatePresence mode="wait">
         {generating && (
@@ -115,8 +39,8 @@ export function PolicyPanel({ phase }: Props) {
             exit={{ opacity: 0 }}
             className="flex flex-col items-center justify-center h-full gap-3"
           >
-            <div className="w-8 h-8 border-2 border-accent-purple/30 border-t-accent-purple rounded-full animate-spin" />
-            <p className="text-xs text-slate-400">Generating policy artifact and policy-as-code…</p>
+            <div className="w-10 h-10 border-2 border-accent-purple/30 border-t-accent-purple rounded-full animate-spin" />
+            <p className="text-sm text-slate-400">Drafting policy…</p>
           </motion.div>
         )}
 
@@ -127,100 +51,55 @@ export function PolicyPanel({ phase }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="flex flex-col gap-3 h-full overflow-auto"
+            className="flex flex-col gap-3 h-full"
           >
-            {/* Policy header */}
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <p className="text-xs font-semibold text-slate-200">{policy.title}</p>
-                <p className="text-[10px] text-slate-500 mt-0.5">Effective: {policy.effectiveDate}</p>
-              </div>
-              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[10px] font-medium shrink-0 ${scopeCfg.color}`}>
-                <ScopeIcon className="w-3 h-3" />
-                {scopeCfg.label}
-              </div>
+            {/* Policy title - BIG */}
+            <div>
+              <p className="text-[10px] font-mono text-slate-500 mb-1">POL-IAM-2026-012</p>
+              <p className="text-sm font-bold text-white leading-tight">
+                Phishing-Resistant MFA
+              </p>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                For privileged & high-risk access
+              </p>
             </div>
 
-            {/* Scope detail */}
-            <div className="panel-inner p-2.5">
-              <p className="text-[9px] uppercase tracking-wider text-slate-500 mb-1">Scope</p>
-              <p className="text-[11px] text-accent-cyan font-medium">{policy.scopeLabel}</p>
-              <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">{policy.rationale}</p>
-            </div>
-
-            {/* View mode toggle */}
-            <div className="flex items-center gap-1 p-0.5 bg-surface-700 rounded-lg border border-surface-border self-start">
-              {([['new', 'Updated', FileText], ['previous', 'Previous', FileText], ['diff', 'Compare', ArrowLeftRight]] as const).map(
-                ([mode, label, Icon]) => (
-                  <button
-                    key={mode}
-                    onClick={() => setViewMode(mode as ViewMode)}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-medium transition-all cursor-pointer ${
-                      viewMode === mode
-                        ? 'bg-surface-500 text-white'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    <Icon className="w-3 h-3" />
-                    {label}
-                  </button>
-                ),
-              )}
-            </div>
-
-            {/* Side-by-side content */}
-            <div className="flex-1 grid grid-cols-2 gap-3 min-h-0">
-              {/* Human-readable column */}
-              <div className="flex flex-col min-h-0">
-                <p className="text-[9px] uppercase tracking-wider text-slate-500 mb-1.5 flex items-center gap-1">
-                  <FileText className="w-3 h-3" />
-                  Human-Readable Policy
-                </p>
-                <div className="flex-1 overflow-auto panel-inner p-3">
-                  {viewMode === 'previous' ? (
-                    <PolicyMarkdown text={policy.previousPolicy || ''} />
-                  ) : viewMode === 'diff' ? (
-                    <div className="space-y-3">
-                      <div className="border-l-2 border-accent-red/40 pl-2 opacity-60">
-                        <p className="text-[9px] text-accent-red font-bold mb-1">— Previous</p>
-                        <PolicyMarkdown text={policy.previousPolicy || ''} />
-                      </div>
-                      <div className="border-l-2 border-accent-emerald/40 pl-2">
-                        <p className="text-[9px] text-accent-emerald font-bold mb-1">+ Updated</p>
-                        <PolicyMarkdown text={policy.humanReadable} isNew />
-                      </div>
-                    </div>
-                  ) : (
-                    <PolicyMarkdown text={policy.humanReadable} isNew />
-                  )}
+            {/* Key requirements - simplified icons */}
+            <div className="space-y-2 my-auto">
+              <div className="flex items-center gap-2.5 p-2 rounded-lg bg-surface-700/50">
+                <div className="w-7 h-7 rounded-md bg-accent-cyan/15 flex items-center justify-center shrink-0">
+                  <Fingerprint className="w-4 h-4 text-accent-cyan" />
                 </div>
+                <p className="text-xs text-slate-200">FIDO2 / Passkeys required</p>
               </div>
-
-              {/* Policy-as-code column */}
-              <div className="flex flex-col min-h-0">
-                <p className="text-[9px] uppercase tracking-wider text-slate-500 mb-1.5 flex items-center gap-1">
-                  <FileCode className="w-3 h-3" />
-                  Policy-as-Code (Azure Policy style)
-                </p>
-                <div className="flex-1 overflow-auto">
-                  {viewMode === 'previous' ? (
-                    <CodeBlock code={policy.previousPolicyAsCode || ''} />
-                  ) : viewMode === 'diff' ? (
-                    <div className="space-y-3">
-                      <div className="opacity-60">
-                        <p className="text-[9px] text-accent-red font-bold mb-1">— Previous</p>
-                        <CodeBlock code={policy.previousPolicyAsCode || ''} />
-                      </div>
-                      <div>
-                        <p className="text-[9px] text-accent-emerald font-bold mb-1">+ Updated</p>
-                        <CodeBlock code={policy.policyAsCode} isNew />
-                      </div>
-                    </div>
-                  ) : (
-                    <CodeBlock code={policy.policyAsCode} isNew />
-                  )}
+              <div className="flex items-center gap-2.5 p-2 rounded-lg bg-surface-700/50">
+                <div className="w-7 h-7 rounded-md bg-accent-indigo/15 flex items-center justify-center shrink-0">
+                  <Key className="w-4 h-4 text-accent-indigo" />
                 </div>
+                <p className="text-xs text-slate-200">OAuth consent: admin-approved only</p>
               </div>
+              <div className="flex items-center gap-2.5 p-2 rounded-lg bg-surface-700/50">
+                <div className="w-7 h-7 rounded-md bg-accent-purple/15 flex items-center justify-center shrink-0">
+                  <Shield className="w-4 h-4 text-accent-purple" />
+                </div>
+                <p className="text-xs text-slate-200">Compliant device required</p>
+              </div>
+            </div>
+
+            {/* Scope - key differentiator */}
+            <div className="p-2.5 rounded-lg bg-accent-cyan/10 border border-accent-cyan/30">
+              <div className="flex items-center gap-2 mb-1">
+                <GitBranch className="w-3.5 h-3.5 text-accent-cyan" />
+                <span className="text-[10px] uppercase tracking-wider text-accent-cyan font-bold">
+                  Scope
+                </span>
+              </div>
+              <p className="text-xs text-slate-200 font-medium">
+                Group baseline (30d)
+              </p>
+              <p className="text-xs text-accent-cyan font-semibold">
+                + Subsidiary accelerated (7d)
+              </p>
             </div>
           </motion.div>
         )}
@@ -232,9 +111,7 @@ export function PolicyPanel({ phase }: Props) {
             animate={{ opacity: 1 }}
             className="flex items-center justify-center h-full"
           >
-            <p className="text-xs text-slate-500">
-              Awaiting risk mapping completion
-            </p>
+            <p className="text-sm text-slate-600">Waiting for risk mapping</p>
           </motion.div>
         )}
       </AnimatePresence>

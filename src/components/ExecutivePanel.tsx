@@ -1,167 +1,147 @@
-import { useState } from 'react';
 import {
   BarChart3,
-  Building2,
-  GitBranch,
   TrendingDown,
   TrendingUp,
   Shield,
   AlertTriangle,
-  Target,
-  Layers,
+  Building2,
+  GitBranch,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PanelShell } from './PanelShell';
 import { MiniSparkline } from './MiniSparkline';
 import { initialExecutiveMetrics, postApprovalExecutiveMetrics } from '../data/executive';
 import type { DemoPhase, ExecutiveMetrics } from '../types';
-import type { AuditEntry } from '../types';
-
-type ViewLevel = 'group' | 'entity';
-
-function MetricCard({
-  label,
-  value,
-  unit,
-  icon: Icon,
-  trend,
-  trendData,
-  trendColor,
-  delay = 0,
-}: {
-  label: string;
-  value: number;
-  unit?: string;
-  icon: typeof Shield;
-  trend?: 'up' | 'down';
-  trendData?: number[];
-  trendColor: string;
-  delay?: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, delay }}
-      className="panel-inner p-3"
-    >
-      <div className="flex items-center gap-1.5 mb-2">
-        <Icon className="w-3 h-3 text-slate-500" />
-        <span className="text-[9px] uppercase tracking-wider text-slate-500">{label}</span>
-        {trend && (
-          <span className="ml-auto">
-            {trend === 'down' ? (
-              <TrendingDown className="w-3 h-3 text-accent-emerald" />
-            ) : (
-              <TrendingUp className="w-3 h-3 text-accent-emerald" />
-            )}
-          </span>
-        )}
-      </div>
-      <div className="flex items-end justify-between">
-        <span className="text-xl font-bold text-white">
-          {value}
-          {unit && <span className="text-sm text-slate-400 font-normal ml-0.5">{unit}</span>}
-        </span>
-        {trendData && (
-          <MiniSparkline data={trendData} color={trendColor} height={24} width={70} />
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-function EntitySummary({
-  metrics,
-  prevMetrics,
-  isPost,
-}: {
-  metrics: ExecutiveMetrics;
-  prevMetrics?: ExecutiveMetrics;
-  isPost: boolean;
-}) {
-  const riskDelta = prevMetrics ? metrics.overallRiskScore - prevMetrics.overallRiskScore : 0;
-  const compDelta = prevMetrics ? metrics.compliancePosture - prevMetrics.compliancePosture : 0;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="space-y-2"
-    >
-      <div className="grid grid-cols-2 gap-2">
-        <MetricCard
-          label="Risk Score"
-          value={metrics.overallRiskScore}
-          icon={AlertTriangle}
-          trend={isPost ? 'down' : undefined}
-          trendData={metrics.exposureTrend}
-          trendColor={isPost ? '#10b981' : '#f97316'}
-          delay={0}
-        />
-        <MetricCard
-          label="Compliance"
-          value={metrics.compliancePosture}
-          unit="%"
-          icon={Shield}
-          trend={isPost ? 'up' : undefined}
-          trendData={metrics.complianceTrend}
-          trendColor={isPost ? '#10b981' : '#f59e0b'}
-          delay={0.1}
-        />
-        <MetricCard
-          label="Open Findings"
-          value={metrics.openFindings}
-          icon={Target}
-          trendColor="#6366f1"
-          delay={0.2}
-        />
-        <MetricCard
-          label="Control Coverage"
-          value={metrics.controlCoverage}
-          unit="%"
-          icon={Layers}
-          trendColor="#3b82f6"
-          delay={0.3}
-        />
-      </div>
-
-      {/* Delta summary after deployment */}
-      {isPost && prevMetrics && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          transition={{ delay: 0.5, duration: 0.3 }}
-          className="panel-inner p-2.5 border-l-2 border-l-accent-emerald"
-        >
-          <p className="text-[9px] uppercase tracking-wider text-accent-emerald mb-1">Post-Control Impact</p>
-          <div className="flex items-center gap-4 text-[10px]">
-            <span className="text-slate-300">
-              Risk <span className="text-accent-emerald font-bold">{riskDelta}</span>
-            </span>
-            <span className="text-slate-300">
-              Compliance <span className="text-accent-emerald font-bold">+{compDelta}%</span>
-            </span>
-            <span className="text-slate-300">
-              Findings <span className="text-accent-emerald font-bold">
-                {metrics.openFindings - (prevMetrics?.openFindings ?? 0)}
-              </span>
-            </span>
-          </div>
-        </motion.div>
-      )}
-    </motion.div>
-  );
-}
 
 interface Props {
   phase: DemoPhase;
-  auditTrail: AuditEntry[];
+  isActive: boolean;
+  isDimmed: boolean;
 }
 
-export function ExecutivePanel({ phase, auditTrail }: Props) {
-  const [viewLevel, setViewLevel] = useState<ViewLevel>('group');
+function EntityRow({
+  metrics,
+  prev,
+  isGroup,
+  deployed,
+  delay,
+}: {
+  metrics: ExecutiveMetrics;
+  prev?: ExecutiveMetrics;
+  isGroup: boolean;
+  deployed: boolean;
+  delay: number;
+}) {
+  const riskDelta = prev ? metrics.overallRiskScore - prev.overallRiskScore : 0;
+  const compDelta = prev ? metrics.compliancePosture - prev.compliancePosture : 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      className="p-3 rounded-lg bg-surface-700/50 border border-surface-border"
+    >
+      {/* Entity header */}
+      <div className="flex items-center gap-2 mb-2">
+        {isGroup
+          ? <Building2 className="w-4 h-4 text-accent-indigo" />
+          : <GitBranch className="w-4 h-4 text-accent-purple" />
+        }
+        <span className="text-xs font-semibold text-slate-200">
+          {metrics.entityName}
+        </span>
+        <span className={`ml-auto text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded ${
+          isGroup
+            ? 'bg-accent-indigo/10 text-accent-indigo'
+            : 'bg-accent-purple/10 text-accent-purple'
+        }`}>
+          {isGroup ? 'Group' : 'Subsidiary'}
+        </span>
+      </div>
+
+      {/* Big metric duo */}
+      <div className="grid grid-cols-2 gap-2">
+        {/* Risk */}
+        <div className="flex items-center gap-2">
+          <AlertTriangle className={`w-4 h-4 ${deployed ? 'text-accent-emerald' : 'text-severity-high'}`} />
+          <div>
+            <div className="flex items-end gap-1">
+              <motion.span
+                key={metrics.overallRiskScore}
+                initial={{ opacity: 0.3 }}
+                animate={{ opacity: 1 }}
+                className={`text-2xl font-bold ${deployed ? 'text-accent-emerald' : 'text-severity-high'}`}
+              >
+                {metrics.overallRiskScore}
+              </motion.span>
+              {deployed && riskDelta < 0 && (
+                <motion.span
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: delay + 0.3 }}
+                  className="text-[10px] text-accent-emerald mb-1 flex items-center"
+                >
+                  <TrendingDown className="w-3 h-3" />
+                  {riskDelta}
+                </motion.span>
+              )}
+            </div>
+            <p className="text-[9px] uppercase tracking-wider text-slate-500">Risk</p>
+          </div>
+          <div className="ml-auto">
+            <MiniSparkline
+              data={metrics.exposureTrend}
+              color={deployed ? '#10b981' : '#f97316'}
+              height={20}
+              width={50}
+            />
+          </div>
+        </div>
+
+        {/* Compliance */}
+        <div className="flex items-center gap-2">
+          <Shield className={`w-4 h-4 ${deployed ? 'text-accent-emerald' : 'text-accent-amber'}`} />
+          <div>
+            <div className="flex items-end gap-1">
+              <motion.span
+                key={metrics.compliancePosture}
+                initial={{ opacity: 0.3 }}
+                animate={{ opacity: 1 }}
+                className={`text-2xl font-bold ${deployed ? 'text-accent-emerald' : 'text-slate-200'}`}
+              >
+                {metrics.compliancePosture}
+              </motion.span>
+              <span className="text-sm text-slate-500 mb-1">%</span>
+              {deployed && compDelta > 0 && (
+                <motion.span
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: delay + 0.4 }}
+                  className="text-[10px] text-accent-emerald mb-1 flex items-center"
+                >
+                  <TrendingUp className="w-3 h-3" />
+                  +{compDelta}
+                </motion.span>
+              )}
+            </div>
+            <p className="text-[9px] uppercase tracking-wider text-slate-500">Compliance</p>
+          </div>
+          <div className="ml-auto">
+            <MiniSparkline
+              data={metrics.complianceTrend}
+              color={deployed ? '#10b981' : '#f59e0b'}
+              height={20}
+              width={50}
+            />
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export function ExecutivePanel({ phase, isActive, isDimmed }: Props) {
   const deployed = phase === 'deployment_complete';
   const hasData = phase !== 'idle';
 
@@ -175,9 +155,11 @@ export function ExecutivePanel({ phase, auditTrail }: Props) {
 
   return (
     <PanelShell
-      title="Executive / Board Summary"
+      title="Board Summary"
       icon={BarChart3}
       accentColor="text-accent-cyan"
+      isActive={isActive}
+      isDimmed={isDimmed}
       badge={deployed ? 'REFRESHED' : hasData ? 'LIVE' : undefined}
       badgeColor={deployed ? 'bg-accent-emerald/15 text-accent-emerald' : 'bg-accent-cyan/15 text-accent-cyan'}
     >
@@ -188,77 +170,22 @@ export function ExecutivePanel({ phase, auditTrail }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col h-full gap-3"
+            className="flex flex-col gap-2 h-full"
           >
-            {/* View level toggle */}
-            <div className="flex items-center gap-1 p-0.5 bg-surface-700 rounded-lg border border-surface-border self-start">
-              <button
-                onClick={() => setViewLevel('group')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-medium transition-all cursor-pointer ${
-                  viewLevel === 'group'
-                    ? 'bg-accent-indigo/15 text-accent-indigo border border-accent-indigo/25'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <Building2 className="w-3 h-3" />
-                Group View
-              </button>
-              <button
-                onClick={() => setViewLevel('entity')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[10px] font-medium transition-all cursor-pointer ${
-                  viewLevel === 'entity'
-                    ? 'bg-accent-purple/15 text-accent-purple border border-accent-purple/25'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <GitBranch className="w-3 h-3" />
-                Northstar Health
-              </button>
-            </div>
-
-            {/* Metrics */}
-            <div className="flex-1 overflow-auto">
-              <AnimatePresence mode="wait">
-                {viewLevel === 'group' ? (
-                  <EntitySummary
-                    key={`group-${deployed}`}
-                    metrics={groupMetrics}
-                    prevMetrics={prevGroup}
-                    isPost={deployed}
-                  />
-                ) : (
-                  <EntitySummary
-                    key={`entity-${deployed}`}
-                    metrics={entityMetrics}
-                    prevMetrics={prevEntity}
-                    isPost={deployed}
-                  />
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Audit trail (compact) */}
-            {auditTrail.length > 0 && (
-              <div className="border-t border-surface-border pt-2 mt-auto">
-                <p className="text-[9px] uppercase tracking-wider text-slate-500 mb-1.5">Audit Trail</p>
-                <div className="space-y-1 max-h-24 overflow-auto">
-                  {[...auditTrail].reverse().map((entry) => (
-                    <motion.div
-                      key={entry.id}
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="flex items-start gap-2 text-[9px]"
-                    >
-                      <span className="text-slate-600 font-mono shrink-0 w-12">
-                        {new Date(entry.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                      <span className="text-slate-500 shrink-0 w-28 truncate">{entry.actor}</span>
-                      <span className="text-slate-400">{entry.action}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <EntityRow
+              metrics={groupMetrics}
+              prev={prevGroup}
+              isGroup={true}
+              deployed={deployed}
+              delay={0}
+            />
+            <EntityRow
+              metrics={entityMetrics}
+              prev={prevEntity}
+              isGroup={false}
+              deployed={deployed}
+              delay={0.15}
+            />
           </motion.div>
         ) : (
           <motion.div
@@ -267,9 +194,7 @@ export function ExecutivePanel({ phase, auditTrail }: Props) {
             animate={{ opacity: 1 }}
             className="flex items-center justify-center h-full"
           >
-            <p className="text-xs text-slate-500">
-              Metrics refresh after deployment
-            </p>
+            <p className="text-sm text-slate-600">Metrics refresh after deployment</p>
           </motion.div>
         )}
       </AnimatePresence>

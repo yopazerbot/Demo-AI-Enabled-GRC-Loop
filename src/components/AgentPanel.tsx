@@ -1,182 +1,107 @@
-import { Bot, ArrowRight, Check, Loader2, Circle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Bot, Check, Loader2, Circle, ArrowDown } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { PanelShell } from './PanelShell';
 import type { AgentState, AgentStatus } from '../types';
 
-const statusConfig: Record<AgentStatus, { icon: typeof Circle; color: string; dotClass: string; label: string }> = {
+const statusConfig: Record<AgentStatus, { icon: typeof Circle; color: string; bg: string; label: string }> = {
   idle: {
     icon: Circle,
-    color: 'text-status-idle',
-    dotClass: 'bg-status-idle',
-    label: 'Idle',
+    color: 'text-slate-500',
+    bg: 'bg-surface-600 border-surface-border',
+    label: 'Waiting',
   },
   processing: {
     icon: Loader2,
-    color: 'text-status-processing',
-    dotClass: 'bg-status-processing',
-    label: 'Processing',
+    color: 'text-accent-blue',
+    bg: 'bg-accent-blue/15 border-accent-blue/40',
+    label: 'Working',
   },
   completed: {
     icon: Check,
-    color: 'text-status-complete',
-    dotClass: 'bg-status-complete',
-    label: 'Complete',
+    color: 'text-accent-emerald',
+    bg: 'bg-accent-emerald/15 border-accent-emerald/40',
+    label: 'Done',
   },
 };
 
-function AgentCard({ agent, index }: { agent: AgentState; index: number }) {
-  const cfg = statusConfig[agent.status];
-  const StatusIcon = cfg.icon;
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.08 }}
-      className={`
-        panel-inner p-3 transition-all duration-300
-        ${agent.status === 'processing' ? 'glow-border-active' : ''}
-      `}
-    >
-      <div className="flex items-start gap-3">
-        {/* Status indicator */}
-        <div className={`
-          w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 transition-colors duration-300
-          ${agent.status === 'processing'
-            ? 'bg-accent-blue/15 border border-accent-blue/30'
-            : agent.status === 'completed'
-              ? 'bg-accent-emerald/15 border border-accent-emerald/30'
-              : 'bg-surface-600 border border-surface-border'
-          }
-        `}>
-          <StatusIcon
-            className={`w-4 h-4 ${cfg.color} ${agent.status === 'processing' ? 'animate-spin' : ''}`}
-          />
-        </div>
-
-        {/* Content */}
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 mb-0.5">
-            <p className="text-xs font-semibold text-slate-200">{agent.name}</p>
-            <span className={`text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded ${
-              agent.status === 'processing'
-                ? 'bg-accent-blue/15 text-accent-blue'
-                : agent.status === 'completed'
-                  ? 'bg-accent-emerald/15 text-accent-emerald'
-                  : 'bg-surface-600 text-slate-500'
-            }`}>
-              {cfg.label}
-            </span>
-          </div>
-          <p className="text-[11px] text-slate-500 leading-relaxed mb-1">
-            {agent.role}
-          </p>
-
-          {/* Output summary */}
-          <AnimatePresence>
-            {agent.outputSummary && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <div className={`text-[11px] leading-relaxed mt-1.5 px-2.5 py-2 rounded border-l-2 ${
-                  agent.status === 'processing'
-                    ? 'bg-accent-blue/5 border-accent-blue/40 text-accent-blue/80'
-                    : 'bg-accent-emerald/5 border-accent-emerald/40 text-accent-emerald/80'
-                }`}>
-                  {agent.outputSummary}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function SignalFlow({ agents }: { agents: AgentState[] }) {
-  // Determine which connections are active
-  const connections = [
-    { from: 0, to: 1, active: agents[0].status === 'completed' },
-    { from: 1, to: 2, active: agents[1].status === 'completed' },
-  ];
-
-  return (
-    <div className="flex items-center justify-center gap-1 py-1">
-      {agents.map((agent, i) => (
-        <div key={agent.id} className="flex items-center gap-1">
-          {/* Node dot */}
-          <div
-            className={`
-              w-3 h-3 rounded-full transition-all duration-500 flex items-center justify-center
-              ${agent.status === 'completed'
-                ? 'bg-accent-emerald shadow-[0_0_8px_rgba(16,185,129,0.4)]'
-                : agent.status === 'processing'
-                  ? 'bg-accent-blue shadow-[0_0_8px_rgba(59,130,246,0.4)] animate-pulse'
-                  : 'bg-surface-500'
-              }
-            `}
-          >
-            {agent.status === 'completed' && (
-              <Check className="w-2 h-2 text-white" />
-            )}
-          </div>
-
-          {/* Connection line */}
-          {i < agents.length - 1 && (
-            <div className="flex items-center gap-0.5">
-              <div className={`h-px w-6 transition-colors duration-500 ${
-                connections[i]?.active ? 'bg-accent-emerald' : 'bg-surface-500'
-              }`} />
-              <ArrowRight className={`w-3 h-3 transition-colors duration-500 ${
-                connections[i]?.active ? 'text-accent-emerald' : 'text-surface-500'
-              }`} />
-              <div className={`h-px w-6 transition-colors duration-500 ${
-                connections[i]?.active ? 'bg-accent-emerald' : 'bg-surface-500'
-              }`} />
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
+const AGENT_SHORT_LABELS: Record<string, string> = {
+  'threat-intake': 'Threat Intake',
+  'risk-mapping': 'Risk Mapping',
+  'control-engineering': 'Policy Engineering',
+};
 
 interface Props {
   agents: AgentState[];
+  isActive: boolean;
+  isDimmed: boolean;
 }
 
-export function AgentPanel({ agents }: Props) {
-  const activeCount = agents.filter((a) => a.status !== 'idle').length;
+export function AgentPanel({ agents, isActive, isDimmed }: Props) {
   const completeCount = agents.filter((a) => a.status === 'completed').length;
+  const hasStarted = agents.some((a) => a.status !== 'idle');
 
   return (
     <PanelShell
       title="Agent Orchestration"
       icon={Bot}
       accentColor="text-accent-blue"
-      badge={activeCount > 0 ? `${completeCount}/${agents.length}` : undefined}
+      isActive={isActive}
+      isDimmed={isDimmed}
+      badge={hasStarted ? `${completeCount}/${agents.length}` : undefined}
       badgeColor={
         completeCount === agents.length
           ? 'bg-accent-emerald/15 text-accent-emerald'
           : 'bg-accent-blue/15 text-accent-blue'
       }
     >
-      <div className="flex flex-col gap-2 h-full">
-        {/* Signal flow visualization */}
-        <SignalFlow agents={agents} />
+      <div className="flex flex-col gap-3 h-full justify-center">
+        {agents.map((agent, i) => {
+          const cfg = statusConfig[agent.status];
+          const StatusIcon = cfg.icon;
+          const shortLabel = AGENT_SHORT_LABELS[agent.id] || agent.name;
 
-        {/* Agent cards */}
-        <div className="flex-1 space-y-2 overflow-auto">
-          {agents.map((agent, i) => (
-            <AgentCard key={agent.id} agent={agent} index={i} />
-          ))}
-        </div>
+          return (
+            <div key={agent.id}>
+              <motion.div
+                layout
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className={`
+                  flex items-center gap-3 p-3 rounded-lg border transition-all duration-500
+                  ${cfg.bg}
+                  ${agent.status === 'processing' ? 'shadow-[0_0_20px_rgba(59,130,246,0.2)]' : ''}
+                `}
+              >
+                {/* Status icon */}
+                <div className="w-10 h-10 rounded-lg bg-surface-900/40 flex items-center justify-center shrink-0">
+                  <StatusIcon
+                    className={`w-5 h-5 ${cfg.color} ${agent.status === 'processing' ? 'animate-spin' : ''}`}
+                  />
+                </div>
+
+                {/* Label */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-100">{shortLabel}</p>
+                  <p className={`text-[11px] font-medium ${cfg.color}`}>
+                    {cfg.label}
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Connector arrow */}
+              {i < agents.length - 1 && (
+                <div className="flex justify-start pl-[1.25rem] py-1">
+                  <ArrowDown
+                    className={`w-3 h-3 transition-colors duration-500 ${
+                      agent.status === 'completed' ? 'text-accent-emerald' : 'text-surface-500'
+                    }`}
+                  />
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </PanelShell>
   );
