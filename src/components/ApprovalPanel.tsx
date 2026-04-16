@@ -47,7 +47,7 @@ export function ApprovalPanel({ phase, scenario, approvalStatus, onApprove, onRe
               <div className="flex items-start gap-2 p-2.5 rounded-lg bg-accent-amber/10 border border-accent-amber/25">
                 <AlertTriangle className="w-3.5 h-3.5 text-accent-amber shrink-0 mt-0.5" />
                 <p className="text-[11px] text-slate-300 leading-relaxed">
-                  <span className="font-semibold text-accent-amber">Friction:</span> {a.friction}
+                  <span className="font-semibold text-accent-amber">Policy Impact Simulation:</span> {a.friction}
                 </p>
               </div>
             </div>
