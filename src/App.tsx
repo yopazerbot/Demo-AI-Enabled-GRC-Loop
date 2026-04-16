@@ -14,6 +14,7 @@ export default function App() {
   const {
     phase,
     agents,
+    auditTrail,
     approvalStatus,
     triggerScenario,
     advancePhase,
@@ -61,7 +62,7 @@ export default function App() {
           <EnvironmentPanel phase={phase} />
         </div>
         <div className="col-span-6 row-span-1 min-h-0">
-          <ExecutivePanel phase={phase} />
+          <ExecutivePanel phase={phase} auditTrail={auditTrail} />
         </div>
       </main>
 
