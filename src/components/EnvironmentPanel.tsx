@@ -172,7 +172,7 @@ export function EnvironmentPanel({ phase }: Props) {
           </motion.div>
         )}
 
-        {(deployed || (!deploying && phase !== 'idle' && phase !== 'new_event_received' && phase !== 'threat_analysis_in_progress')) && (
+        {(deployed || (!deploying && phase !== 'idle')) && (
           <motion.div
             key="env-view"
             initial={{ opacity: 0 }}
@@ -215,7 +215,7 @@ export function EnvironmentPanel({ phase }: Props) {
           </motion.div>
         )}
 
-        {(phase === 'idle' || phase === 'new_event_received' || phase === 'threat_analysis_in_progress') && (
+        {phase === 'idle' && (
           <motion.div
             key="waiting"
             initial={{ opacity: 0 }}
