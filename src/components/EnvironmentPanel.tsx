@@ -1,4 +1,5 @@
-import { Server, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Server, CheckCircle2, XCircle, Loader2, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PanelShell } from './PanelShell';
 import type { DemoPhase } from '../types';
@@ -11,34 +12,100 @@ interface Props {
   isDimmed: boolean;
 }
 
+const PHASES_WITH_DATA: DemoPhase[] = [
+  'awaiting_approval',
+  'deployment_in_progress',
+  'deployment_complete',
+];
+
+const DEPLOYMENT_STEPS = [
+  'Compiling policy-as-code artifact…',
+  'Pushing configuration to target systems…',
+  'Checking resource configurations…',
+  'Validating compliance state…',
+];
+
 function percentCompliant(assets: { compliant: boolean }[]): number {
   if (assets.length === 0) return 0;
   return Math.round((assets.filter((a) => a.compliant).length / assets.length) * 100);
 }
 
+function DeploymentAnimation() {
+  const [stepIdx, setStepIdx] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setStepIdx((i) => Math.min(i + 1, DEPLOYMENT_STEPS.length - 1));
+    }, 900);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="flex flex-col h-full justify-center gap-1.5 px-2">
+      {DEPLOYMENT_STEPS.map((step, i) => {
+        const isDone = i < stepIdx;
+        const isCurrent = i === stepIdx;
+        const isPending = i > stepIdx;
+        return (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -6 }}
+            animate={{ opacity: isPending ? 0.35 : 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg border transition-colors duration-300 ${
+              isDone ? 'bg-accent-emerald/10 border-accent-emerald/30'
+              : isCurrent ? 'bg-accent-blue/10 border-accent-blue/40 shadow-[0_0_16px_rgba(37,99,235,0.2)]'
+              : 'bg-surface-700/40 border-surface-border'
+            }`}
+          >
+            <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0">
+              {isDone && <Check className="w-4 h-4 text-accent-emerald" />}
+              {isCurrent && <Loader2 className="w-4 h-4 text-accent-blue animate-spin" />}
+              {isPending && <div className="w-2 h-2 rounded-full bg-surface-400" />}
+            </div>
+            <p className={`text-xs font-medium ${
+              isDone ? 'text-accent-emerald' : isCurrent ? 'text-accent-blue' : 'text-slate-500'
+            }`}>
+              {step}
+            </p>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
 export function EnvironmentPanel({ phase, scenario, isActive, isDimmed }: Props) {
   const deployed = phase === 'deployment_complete';
   const deploying = phase === 'deployment_in_progress';
+  const hasData = PHASES_WITH_DATA.includes(phase);
   const env = deployed ? scenario.envAfter : scenario.envBefore;
-  const showData = phase !== 'idle' && !deploying;
 
   const pct = percentCompliant(env.affectedAssets);
   const compliantCount = env.affectedAssets.filter((a) => a.compliant).length;
   const total = env.affectedAssets.length;
 
   return (
-    <PanelShell title="Corporate Environment" icon={Server} accentColor="text-accent-emerald" isActive={isActive} isDimmed={isDimmed}
-      badge={deployed ? 'UPDATED' : deploying ? 'DEPLOYING' : undefined}
-      badgeColor={deployed ? 'bg-accent-emerald/15 text-accent-emerald' : 'bg-accent-blue/15 text-accent-blue'}
+    <PanelShell
+      title="Corporate Environment"
+      icon={Server}
+      accentColor="text-accent-emerald"
+      isActive={isActive}
+      isDimmed={isDimmed}
+      badge={deployed ? 'TARGET STATE' : deploying ? 'UPDATING…' : hasData ? 'CURRENT STATE' : undefined}
+      badgeColor={
+        deployed ? 'bg-accent-emerald/15 text-accent-emerald'
+        : deploying ? 'bg-accent-blue/15 text-accent-blue'
+        : 'bg-accent-amber/15 text-accent-amber'
+      }
     >
       <AnimatePresence mode="wait">
         {deploying && (
-          <motion.div key="deploying" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center justify-center h-full gap-4">
-            <Loader2 className="w-12 h-12 text-accent-blue animate-spin" />
-            <p className="text-sm font-semibold text-white">Deploying policy…</p>
+          <motion.div key="deploying" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full">
+            <DeploymentAnimation />
           </motion.div>
         )}
-        {showData && (
+        {hasData && !deploying && (
           <motion.div key={`env-${scenario.id}-${deployed}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full flex flex-col gap-4">
             {/* Headline: assets compliant */}
             <div className="flex items-center justify-between">
@@ -90,9 +157,9 @@ export function EnvironmentPanel({ phase, scenario, isActive, isDimmed }: Props)
             </div>
           </motion.div>
         )}
-        {phase === 'idle' && (
+        {!hasData && !deploying && (
           <motion.div key="waiting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center h-full">
-            <p className="text-sm text-slate-600">Awaiting deployment</p>
+            <p className="text-sm text-slate-600">Environment view appears at approval</p>
           </motion.div>
         )}
       </AnimatePresence>
