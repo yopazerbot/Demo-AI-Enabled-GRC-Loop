@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import type { DemoPhase, AgentState, AuditEntry } from '../types';
 import type { ScenarioData } from '../data/scenarioTypes';
 import { ALL_SCENARIOS } from '../data/scenarios';
@@ -13,14 +13,6 @@ export const PHASE_ORDER: DemoPhase[] = [
   'deployment_in_progress',
   'deployment_complete',
 ];
-
-const AUTO_ADVANCE_DELAYS: Partial<Record<DemoPhase, number>> = {
-  new_event_received: 2000,
-  threat_analysis_in_progress: 3000,
-  risk_mapped: 2500,
-  policy_generated: 2500,
-  deployment_in_progress: 3000,
-};
 
 function agentsForPhase(phase: DemoPhase, scenario: ScenarioData): AgentState[] {
   return scenario.agents.map((agent) => {
@@ -50,7 +42,7 @@ function agentsForPhase(phase: DemoPhase, scenario: ScenarioData): AgentState[] 
           return { ...agent, status: 'processing' as const, outputSummary: 'Generating policy…' };
         return agent;
 
-      default: // awaiting_approval, deployment_in_progress, deployment_complete
+      default:
         return { ...agent, status: 'completed' as const };
     }
   });
@@ -70,63 +62,29 @@ export function useDemoStateMachine() {
   const [agents, setAgents] = useState<AgentState[]>(ALL_SCENARIOS[0].agents);
   const [auditTrail, setAuditTrail] = useState<AuditEntry[]>([]);
   const [approvalStatus, setApprovalStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const scenario = ALL_SCENARIOS[scenarioIdx];
-
-  useEffect(() => {
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
-  }, []);
-
-  const addAuditEntry = useCallback((newPhase: DemoPhase, idx: number, sc: ScenarioData) => {
-    const entry = generateAuditEntryFromScenario(newPhase, idx, sc);
-    if (entry) setAuditTrail((prev) => [...prev, entry]);
-  }, []);
 
   const goToPhase = useCallback(
     (next: DemoPhase, sc: ScenarioData) => {
       const idx = PHASE_ORDER.indexOf(next);
       setPhase(next);
       setAgents(agentsForPhase(next, sc));
-      addAuditEntry(next, idx, sc);
-
-      if (timerRef.current) clearTimeout(timerRef.current);
-      const delay = AUTO_ADVANCE_DELAYS[next];
-      if (delay) {
-        const nextIdx = idx + 1;
-        if (nextIdx < PHASE_ORDER.length) {
-          timerRef.current = setTimeout(() => goToPhase(PHASE_ORDER[nextIdx], sc), delay);
-        }
-      }
+      const entry = generateAuditEntryFromScenario(next, idx, sc);
+      if (entry) setAuditTrail((prev) => [...prev, entry]);
     },
-    [addAuditEntry],
+    [],
   );
 
   const advancePhase = useCallback(() => {
-    setPhase((current) => {
-      const idx = PHASE_ORDER.indexOf(current);
-      if (idx < 0 || idx >= PHASE_ORDER.length - 1) return current;
-      if (current === 'awaiting_approval') return current;
-
-      const next = PHASE_ORDER[idx + 1];
-      if (timerRef.current) clearTimeout(timerRef.current);
-      setAgents(agentsForPhase(next, scenario));
-      addAuditEntry(next, idx + 1, scenario);
-
-      const delay = AUTO_ADVANCE_DELAYS[next];
-      if (delay) {
-        const nextIdx = idx + 2;
-        if (nextIdx < PHASE_ORDER.length) {
-          timerRef.current = setTimeout(() => goToPhase(PHASE_ORDER[nextIdx], scenario), delay);
-        }
-      }
-      return next;
-    });
-  }, [addAuditEntry, goToPhase, scenario]);
+    const idx = PHASE_ORDER.indexOf(phase);
+    if (idx < 0 || idx >= PHASE_ORDER.length - 1) return;
+    if (phase === 'awaiting_approval') return;
+    goToPhase(PHASE_ORDER[idx + 1], scenario);
+  }, [phase, goToPhase, scenario]);
 
   const triggerScenario = useCallback(() => {
     if (phase !== 'idle') return;
-    if (timerRef.current) clearTimeout(timerRef.current);
     setApprovalStatus('pending');
     setAuditTrail([]);
     goToPhase('new_event_received', scenario);
@@ -144,7 +102,6 @@ export function useDemoStateMachine() {
   }, [phase]);
 
   const resetDemo = useCallback(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
     setPhase('idle');
     setAgents(scenario.agents);
     setAuditTrail([]);
@@ -152,7 +109,6 @@ export function useDemoStateMachine() {
   }, [scenario]);
 
   const switchScenario = useCallback((idx: number) => {
-    if (timerRef.current) clearTimeout(timerRef.current);
     setScenarioIdx(idx);
     setPhase('idle');
     setAgents(ALL_SCENARIOS[idx].agents);
