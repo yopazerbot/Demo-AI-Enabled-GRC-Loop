@@ -11,7 +11,20 @@ export function PhaseControls({ phase, onAdvance, onReset }: Props) {
   const canAdvance = phase !== 'idle' && phase !== 'awaiting_approval' && phase !== 'deployment_complete';
 
   return (
-    <div className="flex items-center justify-end gap-2 px-4 py-2 border-t border-surface-border bg-surface-800/60 backdrop-blur-sm">
+    <div className="flex items-center gap-2 px-4 py-2 border-t border-surface-border bg-surface-800/60 backdrop-blur-sm">
+      <span className="text-[10px] text-slate-500">
+        Made by{' '}
+        <a
+          href="https://www.linkedin.com/in/yoshiparlevliet"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-accent-cyan/70 hover:text-accent-cyan transition-colors"
+        >
+          Yoshi Parlevliet
+        </a>
+      </span>
+
+      <div className="ml-auto flex items-center gap-2">
       {canAdvance && (
         <button
           onClick={onAdvance}
@@ -31,6 +44,7 @@ export function PhaseControls({ phase, onAdvance, onReset }: Props) {
           Reset
         </button>
       )}
+      </div>
     </div>
   );
 }
