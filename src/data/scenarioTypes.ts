@@ -43,6 +43,11 @@ export interface ScenarioData {
     reason: string;
     friction: string;
   };
+  boardStatement: {
+    before: string;
+    after: string;
+  };
+  controlAction: string;
   threatSummary: {
     shortTitle: string;
     description: string;

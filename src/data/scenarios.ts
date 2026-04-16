@@ -89,6 +89,13 @@ export const scenario1: ScenarioData = {
     friction: '3-5 day FIDO2 enrollment for ~25% of users.',
   },
 
+  boardStatement: {
+    before: 'An active AI-driven phishing campaign has pushed identity compromise risk outside board-stated appetite. Governance engineering response under way.',
+    after: 'Identity compromise risk returned to within appetite. Phishing-resistant MFA uplift strengthens ISO 27001 A.8 controls and evidences proactive cyber risk management as required for NIS2 essential entities.',
+  },
+
+  controlAction: 'Enforced phishing-resistant MFA (FIDO2/passkeys) for all privileged and high-risk access, restricted OAuth consent to admins, and required compliant devices.',
+
   envBefore: {
     entityId: 'verhelst', entityName: 'Verhelst Industries', complianceScore: 74,
     policyAssignments: [], affectedAssets: [
@@ -241,6 +248,13 @@ export const scenario2: ScenarioData = {
     reason: 'Approve emergency patch SLA and mandatory SCA gating to close critical RCE.',
     friction: 'Emergency maintenance window. 2 CI/CD pipelines blocked until SCA integrated.',
   },
+
+  boardStatement: {
+    before: 'A critical unauthenticated RCE disclosed via the bug bounty programme has pushed software supply chain risk outside board-stated appetite. Emergency control uplift under way.',
+    after: 'Supply chain risk returned to within appetite. The RCE is remediated and a mandatory SCA pipeline gate is in place to prevent recurrence, strengthening ISO 27001 A.8.25 secure development controls.',
+  },
+
+  controlAction: 'Patched the vulnerable JWT library across all services within SLA, introduced mandatory SCA scanning in CI/CD, and set a 24-hour patch SLA for critical CVEs.',
 
   envBefore: {
     entityId: 'verhelst', entityName: 'Verhelst Industries', complianceScore: 68,
