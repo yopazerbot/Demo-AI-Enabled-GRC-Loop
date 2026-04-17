@@ -14,7 +14,7 @@ export interface ScenarioData {
   id: string;
   label: string;
   subtitle: string;
-  icon: 'phishing' | 'bug';
+  icon: 'phishing' | 'bug' | 'ransomware' | 'vendor' | 'cloud';
   threatEvent: ThreatEvent;
   riskMapping: RiskMapping;
   policy: PolicyUpdate;
@@ -38,7 +38,7 @@ export interface ScenarioData {
   policySummary: {
     title: string;
     subtitle: string;
-    requirements: { icon: 'fingerprint' | 'key' | 'shield' | 'scan' | 'clock' | 'code'; text: string }[];
+    requirements: { icon: 'fingerprint' | 'key' | 'shield' | 'scan' | 'clock' | 'code' | 'lock' | 'cloud' | 'eye' | 'database' | 'network'; text: string }[];
     scope: string;
   };
   approvalSummary: {
