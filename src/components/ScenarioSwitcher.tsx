@@ -1,4 +1,4 @@
-import { ShieldAlert, Bug, BookOpen } from 'lucide-react';
+import { ShieldAlert, Bug, BookOpen, Lock, Building2, Cloud } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { ScenarioData } from '../data/scenarioTypes';
 
@@ -6,6 +6,9 @@ const ICONS = {
   phishing: ShieldAlert,
   bug: Bug,
   info: BookOpen,
+  ransomware: Lock,
+  vendor: Building2,
+  cloud: Cloud,
 };
 
 interface Props {
