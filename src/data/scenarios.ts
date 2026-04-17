@@ -326,4 +326,167 @@ export const scenario2: ScenarioData = {
   },
 };
 
-export const ALL_SCENARIOS: ScenarioData[] = [scenario2, scenario1];
+export const scenario3: ScenarioData = {
+  id: 'ransomware-ot',
+  label: 'Ransomware on OT',
+  subtitle: 'Business Continuity & NIS2',
+  icon: 'ransomware',
+
+  threatEvent: {
+    id: 'ENISA-2026-00442',
+    title: 'Clop-Variant Ransomware Targeting EU Manufacturing SCADA/MES',
+    description: 'Coordinated double-extortion campaign against discrete manufacturing across DACH and Benelux. Operators observed exfiltrating MES recipes before encrypting historian and SCADA hosts.',
+    severity: 'critical',
+    confidence: 'high',
+    tlp: 'RED',
+    threatVector: 'Spearphish → SMB Lateral Movement → MES/SCADA Encryption + Exfiltration',
+    suggestedMitigation: 'Enforce IT/OT segmentation, immutable offline backups, and privileged access workstations for OT administration.',
+    timestamp: '2026-04-15T06:12:00Z',
+    source: 'ENISA / CERT-EU',
+    affectedEntities: ['verhelst'],
+    tags: ['T1486', 'T1490', 'Clop', 'NIS2', 'OT'],
+  },
+
+  threatSummary: {
+    shortTitle: 'Ransomware on Manufacturing',
+    description: 'Clop variant hitting EU discrete manufacturing MES/SCADA with double extortion',
+    vector: 'Spearphish → Lateral → MES Encryption',
+    source: 'ENISA / CERT-EU',
+  },
+
+  riskMapping: {
+    riskId: 'RSK-2026-0099',
+    riskStatement: 'Operational disruption and data extortion from ransomware targeting manufacturing execution and SCADA systems across EU plants.',
+    riskOwner: 'Jan Desmet, COO',
+    impactedCapability: 'Operational Technology Resilience',
+    residualExposure: 71,
+    isoControlTheme: 'A.5.29–30, A.8.13 — Business Continuity & Backup (ISO/IEC 27001:2022)',
+    isoControlRef: 'A.5.29 · A.5.30 · A.8.13',
+    affectedEntities: [
+      { entityId: 'verhelst', entityName: 'Verhelst Industries', localExposure: 71, localImpact: 'Flat IT/OT network at 3 plants. MES backups are online only — fully ransomware-exposed.' },
+    ],
+  },
+
+  analysisSummary: {
+    isoTheme: 'ISO/IEC 27001',
+    isoCode: 'A.5.29 · Continuity',
+    isoDetail: 'OT ransomware & extortion risk',
+    riskStatement: 'Ransomware encryption of MES and SCADA would halt production at 3 plants with double-extortion data leak risk, triggering NIS2 significant-incident notification obligations within 24 hours.',
+    likelihood: 'High',
+    impact: 'Critical',
+    callout: '3 plants run flat IT/OT networks. MES backups online only — ransomware-exposed.',
+  },
+
+  policy: {
+    policyId: 'POL-OT-2026-014',
+    title: 'IT/OT Segmentation, Immutable Offline Backups & PAW for OT Administration',
+    scope: 'group',
+    scopeLabel: 'Organization-wide (OT sites)',
+    humanReadable: '',
+    policyAsCode: '',
+    effectiveDate: '2026-04-15',
+    rationale: 'Active ransomware campaign targeting EU manufacturing MES/SCADA combined with existing flat IT/OT topology.',
+  },
+
+  policySummary: {
+    title: 'OT Ransomware Resilience',
+    subtitle: 'Segmentation · immutable backup · PAW',
+    requirements: [
+      { icon: 'network', text: 'IT/OT segmentation (Purdue L3/L3.5 firewalls)' },
+      { icon: 'lock', text: 'Daily immutable offline backups for MES & historian' },
+      { icon: 'key', text: 'Privileged Access Workstations for OT admins' },
+    ],
+    scope: 'Organization-wide · 21-day rollout',
+  },
+
+  approval: {
+    id: 'APR-2026-0356',
+    reasonForChange: 'Active ransomware campaign targeting EU manufacturing MES/SCADA.',
+    scope: 'group',
+    scopeLabel: 'Organization-wide',
+    expectedImpact: 'Reduces OT ransomware exposure from 71% to under 18% and shortens plant recovery time from days to hours.',
+    businessFrictionWarning: '2-hour maintenance window per plant for segmentation firewalls. PAW provisioning for 38 OT admins.',
+    approverName: 'Dr. Elena Vasquez',
+    approverRole: 'Chief Risk Officer',
+    impactedEntities: ['Verhelst Industries'],
+    status: 'pending',
+  },
+
+  approvalSummary: {
+    reason: 'Approve OT segmentation, immutable backups and PAW to contain ransomware blast radius.',
+    friction: '2-hour maintenance per plant. PAW provisioning for 38 OT admins.',
+  },
+
+  boardStatement: {
+    before: 'An active ransomware campaign against EU manufacturing has pushed operational-continuity risk outside board-stated appetite. NIS2-aligned response under way.',
+    after: 'OT continuity risk returned to within appetite. IT/OT segmentation, immutable backups and PAW-based admin access materially reduce ransomware blast radius and evidence NIS2 business-continuity requirements.',
+  },
+
+  controlAction: 'Enforced Purdue-aligned IT/OT segmentation, daily immutable offline backups of MES and historian data, and required Privileged Access Workstations for all OT administration.',
+
+  envBefore: {
+    entityId: 'verhelst', entityName: 'Verhelst Industries', complianceScore: 65,
+    policyAssignments: [], affectedAssets: [
+      { id: 'O1', name: 'Antwerp Plant MES', type: 'OT', compliant: false, lastChecked: '' },
+      { id: 'O2', name: 'Gent Plant SCADA', type: 'OT', compliant: false, lastChecked: '' },
+      { id: 'O3', name: 'Hasselt Historian', type: 'OT', compliant: false, lastChecked: '' },
+      { id: 'O4', name: 'Backup Vault', type: 'Data Store', compliant: false, lastChecked: '' },
+      { id: 'O5', name: 'Jump Host Farm', type: 'Identity', compliant: true, lastChecked: '' },
+    ], remediationStatus: [],
+  },
+
+  envAfter: {
+    entityId: 'verhelst', entityName: 'Verhelst Industries', complianceScore: 93,
+    policyAssignments: [], affectedAssets: [
+      { id: 'O1', name: 'Antwerp Plant MES', type: 'OT', compliant: true, lastChecked: '' },
+      { id: 'O2', name: 'Gent Plant SCADA', type: 'OT', compliant: true, lastChecked: '' },
+      { id: 'O3', name: 'Hasselt Historian', type: 'OT', compliant: true, lastChecked: '' },
+      { id: 'O4', name: 'Backup Vault', type: 'Data Store', compliant: true, lastChecked: '' },
+      { id: 'O5', name: 'Jump Host Farm', type: 'Identity', compliant: true, lastChecked: '' },
+    ], remediationStatus: [],
+  },
+
+  metricsBefore: {
+    entityId: 'verhelst', entityName: 'Verhelst Industries', overallRiskScore: 42, compliancePosture: 65, openFindings: 16, controlCoverage: 64,
+    exposureTrend: [33, 35, 37, 39, 41, 42], complianceTrend: [72, 71, 69, 68, 66, 65],
+  },
+
+  metricsAfter: {
+    entityId: 'verhelst', entityName: 'Verhelst Industries', overallRiskScore: 13, compliancePosture: 93, openFindings: 3, controlCoverage: 92,
+    exposureTrend: [35, 37, 39, 42, 25, 13], complianceTrend: [71, 69, 68, 65, 82, 93],
+  },
+
+  agents: [
+    { id: 'threat-intake', name: 'Threat Intake Agent', role: 'Reads the ENISA advisory and maps Clop TTPs to our environment.', status: 'idle', description: '' },
+    { id: 'risk-mapping', name: 'Risk Assessment Agent', role: 'Correlates OT asset inventory with backup state and segmentation posture.', status: 'idle', description: '' },
+    { id: 'control-engineering', name: 'Control Engineering Agent', role: 'Drafts the segmentation, backup and PAW policy-as-code.', status: 'idle', description: '' },
+  ],
+
+  agentSteps: {
+    'threat-intake': {
+      processing: 'Reading ENISA-2026-00442, mapping ATT&CK to Clop TTPs…',
+      output: 'Clop-variant ransomware targeting EU manufacturing MES/SCADA with double extortion. Business-critical exposure.',
+    },
+    'risk-mapping': {
+      processing: 'Correlating OT asset inventory with backup state and segmentation posture…',
+      output: 'Mapped to RSK-2026-0099 (OT ransomware) → ISO 27001 A.5.29 Continuity. Residual exposure: 71%.',
+    },
+    'control-engineering': {
+      processing: 'Drafting Purdue segmentation firewall rules and immutable backup policy-as-code…',
+      output: 'POL-OT-2026-014 drafted: IT/OT segmentation, daily immutable backups, PAW for OT admins.',
+    },
+  },
+
+  auditEntries: {
+    new_event_received: { actor: 'CERT-EU Connector', action: 'Threat Ingested', detail: 'ENISA-2026-00442 — Clop variant. TLP:RED.', phase: 'new_event_received' },
+    threat_analysis_in_progress: { actor: 'Threat Intake Agent', action: 'Analysing', detail: 'Mapping Clop TTPs to OT estate.', phase: 'threat_analysis_in_progress' },
+    risk_mapped: { actor: 'Risk Assessment Agent', action: 'Risk Assessed', detail: 'RSK-2026-0099 → ISO A.5.29.', phase: 'risk_mapped' },
+    policy_generated: { actor: 'Control Engineering Agent', action: 'Policy Drafted', detail: 'POL-OT-2026-014 ready.', phase: 'policy_generated' },
+    awaiting_approval: { actor: 'Orchestration', action: 'Approval Gate', detail: 'Awaiting CRO.', phase: 'awaiting_approval' },
+    deployment_in_progress: { actor: 'Dr. Elena Vasquez', action: 'Approved', detail: 'Rolling segmentation + immutable backup.', phase: 'deployment_in_progress' },
+    environment_updated: { actor: 'Environment Controller', action: 'Target State Reached', detail: 'Segmentation live. Immutable backups active.', phase: 'environment_updated' },
+    deployment_complete: { actor: 'Board Reporting', action: 'Board Refreshed', detail: 'Risk posture updated; loop closed.', phase: 'deployment_complete' },
+  },
+};
+
+export const ALL_SCENARIOS: ScenarioData[] = [scenario2, scenario1, scenario3];
