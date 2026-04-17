@@ -1,4 +1,4 @@
-import { FileCode, Shield, Fingerprint, Key, ScanSearch, Clock, Code, Globe } from 'lucide-react';
+import { FileCode, Shield, Fingerprint, Key, ScanSearch, Clock, Code, Globe, Lock, Cloud, Eye, Database, Network } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PanelShell } from './PanelShell';
 import type { DemoPhase } from '../types';
@@ -13,6 +13,11 @@ const ICON_MAP = {
   scan: ScanSearch,
   clock: Clock,
   code: Code,
+  lock: Lock,
+  cloud: Cloud,
+  eye: Eye,
+  database: Database,
+  network: Network,
 };
 
 interface Props {
