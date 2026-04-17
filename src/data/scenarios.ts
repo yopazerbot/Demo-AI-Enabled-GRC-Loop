@@ -489,4 +489,167 @@ export const scenario3: ScenarioData = {
   },
 };
 
-export const ALL_SCENARIOS: ScenarioData[] = [scenario2, scenario1, scenario3];
+export const scenario4: ScenarioData = {
+  id: 'vendor-breach-hr',
+  label: 'Third-Party HR Vendor Breach',
+  subtitle: 'Supplier Risk & GDPR',
+  icon: 'vendor',
+
+  threatEvent: {
+    id: 'CERT-EU-2026-01187',
+    title: 'Data Breach at PeopleHub HCM — Employee PII Exposed Across EU Customers',
+    description: 'PeopleHub (HR SaaS used by ~600 EU enterprises) discloses unauthorized data access via a leaked integration API key. Names, IBANs and national IDs for 1.2M workers affected.',
+    severity: 'critical',
+    confidence: 'high',
+    tlp: 'AMBER',
+    threatVector: 'Third-party API key leak → Unauthorized data access → PII exfiltration',
+    suggestedMitigation: 'Rotate integration credentials, invoke DPA breach-notification clause, trigger 72h GDPR Art. 33 assessment.',
+    timestamp: '2026-04-16T08:02:00Z',
+    source: 'PeopleHub Trust Center / CERT-EU',
+    affectedEntities: ['verhelst'],
+    tags: ['GDPR', 'Art. 33', 'Third-party', 'PII', 'TPRM'],
+  },
+
+  threatSummary: {
+    shortTitle: 'HR SaaS Vendor Breach',
+    description: 'PeopleHub HCM breach exposes employee PII across EU customers',
+    vector: 'API Key Leak → Data Exfiltration',
+    source: 'PeopleHub Trust Center',
+  },
+
+  riskMapping: {
+    riskId: 'RSK-2026-0101',
+    riskStatement: 'Unauthorized disclosure of employee PII via compromised third-party HR SaaS, triggering GDPR Art. 33 notification obligations within 72 hours.',
+    riskOwner: 'Ines Kowalski, DPO',
+    impactedCapability: 'Third-Party Risk Management & Data Protection',
+    residualExposure: 58,
+    isoControlTheme: 'A.5.19–22, A.5.34 — Supplier & Privacy (ISO/IEC 27001:2022)',
+    isoControlRef: 'A.5.19 · A.5.22 · A.5.34',
+    affectedEntities: [
+      { entityId: 'verhelst', entityName: 'Verhelst Industries', localExposure: 58, localImpact: 'PeopleHub integrated with SAP HR for 4,200 EU employees using a legacy static API key. No egress monitoring on connector.' },
+    ],
+  },
+
+  analysisSummary: {
+    isoTheme: 'ISO/IEC 27001',
+    isoCode: 'A.5.19 · Supplier Risk',
+    isoDetail: 'Third-party PII exposure',
+    riskStatement: 'Compromised HR SaaS could expose PII for 4,200 EU employees, triggering GDPR Art. 33 supervisory-authority notification within 72 hours and potential fines up to 4% of group turnover.',
+    likelihood: 'High',
+    impact: 'Critical',
+    callout: '9 HR/payroll SaaS integrations still authenticate with static API keys — no rotation, no egress monitoring.',
+  },
+
+  policy: {
+    policyId: 'POL-TPRM-2026-011',
+    title: 'Mandatory OAuth + mTLS for Vendor Integrations and GDPR 72h Escalation SLA',
+    scope: 'group',
+    scopeLabel: 'Organization-wide',
+    humanReadable: '',
+    policyAsCode: '',
+    effectiveDate: '2026-04-16',
+    rationale: 'Third-party HR SaaS breach exposes employee PII while static API keys remain in use across HR and payroll integrations.',
+  },
+
+  policySummary: {
+    title: 'Vendor Integration Hardening',
+    subtitle: 'OAuth + mTLS · GDPR 72h escalation',
+    requirements: [
+      { icon: 'key', text: 'OAuth + mTLS for all vendor integrations' },
+      { icon: 'clock', text: '72-hour GDPR Art. 33 escalation runbook' },
+      { icon: 'eye', text: 'Egress monitoring on all vendor connectors' },
+    ],
+    scope: 'Organization-wide · 14-day rollout',
+  },
+
+  approval: {
+    id: 'APR-2026-0361',
+    reasonForChange: 'Active third-party HR SaaS breach with PII exposure for 4,200 EU employees.',
+    scope: 'group',
+    scopeLabel: 'Organization-wide',
+    expectedImpact: 'Rotates exposed credentials, eliminates static API keys, and formalises the GDPR Art. 33 breach timeline.',
+    businessFrictionWarning: 'HR team needs credential re-enrolment for 9 SaaS integrations; possible 4-hour SAP HR sync pause during cutover.',
+    approverName: 'Dr. Elena Vasquez',
+    approverRole: 'Chief Risk Officer',
+    impactedEntities: ['Verhelst Industries'],
+    status: 'pending',
+  },
+
+  approvalSummary: {
+    reason: 'Approve vendor-integration hardening and GDPR 72h escalation runbook.',
+    friction: 'Credential re-enrolment for 9 HR/payroll SaaS integrations. 4h SAP HR sync pause.',
+  },
+
+  boardStatement: {
+    before: 'A third-party HR-SaaS breach has pushed supplier and privacy risk outside board-stated appetite. DPO-led response under way.',
+    after: 'Supplier and privacy risk returned to within appetite. Vendor-integration hardening and a formalised GDPR Art. 33 escalation runbook strengthen ISO 27001 A.5.19 supplier controls and eliminate reliance on static credentials.',
+  },
+
+  controlAction: 'Rotated PeopleHub integration credentials, mandated OAuth + mTLS across vendor connectors, deployed egress monitoring, and codified the 72-hour GDPR Art. 33 escalation runbook.',
+
+  envBefore: {
+    entityId: 'verhelst', entityName: 'Verhelst Industries', complianceScore: 70,
+    policyAssignments: [], affectedAssets: [
+      { id: 'V1', name: 'PeopleHub HCM', type: 'SaaS Vendor', compliant: false, lastChecked: '' },
+      { id: 'V2', name: 'SAP HR', type: 'HRIS', compliant: true, lastChecked: '' },
+      { id: 'V3', name: 'Okta Integrations', type: 'Identity', compliant: false, lastChecked: '' },
+      { id: 'V4', name: 'DLP Egress Gateway', type: 'Network', compliant: false, lastChecked: '' },
+      { id: 'V5', name: 'ROPA Register', type: 'Data Store', compliant: true, lastChecked: '' },
+    ], remediationStatus: [],
+  },
+
+  envAfter: {
+    entityId: 'verhelst', entityName: 'Verhelst Industries', complianceScore: 92,
+    policyAssignments: [], affectedAssets: [
+      { id: 'V1', name: 'PeopleHub HCM', type: 'SaaS Vendor', compliant: true, lastChecked: '' },
+      { id: 'V2', name: 'SAP HR', type: 'HRIS', compliant: true, lastChecked: '' },
+      { id: 'V3', name: 'Okta Integrations', type: 'Identity', compliant: true, lastChecked: '' },
+      { id: 'V4', name: 'DLP Egress Gateway', type: 'Network', compliant: true, lastChecked: '' },
+      { id: 'V5', name: 'ROPA Register', type: 'Data Store', compliant: true, lastChecked: '' },
+    ], remediationStatus: [],
+  },
+
+  metricsBefore: {
+    entityId: 'verhelst', entityName: 'Verhelst Industries', overallRiskScore: 36, compliancePosture: 70, openFindings: 11, controlCoverage: 70,
+    exposureTrend: [28, 30, 32, 33, 35, 36], complianceTrend: [77, 75, 74, 72, 71, 70],
+  },
+
+  metricsAfter: {
+    entityId: 'verhelst', entityName: 'Verhelst Industries', overallRiskScore: 12, compliancePosture: 92, openFindings: 3, controlCoverage: 91,
+    exposureTrend: [30, 32, 33, 36, 22, 12], complianceTrend: [75, 74, 72, 70, 83, 92],
+  },
+
+  agents: [
+    { id: 'threat-intake', name: 'Threat Intake Agent', role: 'Parses the vendor breach disclosure and impact scope.', status: 'idle', description: '' },
+    { id: 'risk-mapping', name: 'Risk Assessment Agent', role: 'Joins affected SaaS to our ROPA and integration inventory.', status: 'idle', description: '' },
+    { id: 'control-engineering', name: 'Control Engineering Agent', role: 'Drafts vendor-integration hardening and GDPR 72h runbook.', status: 'idle', description: '' },
+  ],
+
+  agentSteps: {
+    'threat-intake': {
+      processing: 'Parsing CERT-EU-2026-01187, correlating PeopleHub disclosure with contracts…',
+      output: 'Breach of PeopleHub HCM exposes PII for 4,200 of our EU employees. GDPR Art. 33 clock started.',
+    },
+    'risk-mapping': {
+      processing: 'Joining affected SaaS to ROPA, identifying static-credential integrations…',
+      output: 'Mapped to RSK-2026-0101 (Supplier/Privacy) → ISO 27001 A.5.19. 9 static-key integrations found. Exposure: 58%.',
+    },
+    'control-engineering': {
+      processing: 'Drafting OAuth+mTLS connector policy and GDPR 72h escalation runbook…',
+      output: 'POL-TPRM-2026-011 drafted: OAuth+mTLS for vendor integrations, egress monitoring, 72h GDPR escalation.',
+    },
+  },
+
+  auditEntries: {
+    new_event_received: { actor: 'CERT-EU Connector', action: 'Disclosure Ingested', detail: 'CERT-EU-2026-01187 — Vendor breach. TLP:AMBER.', phase: 'new_event_received' },
+    threat_analysis_in_progress: { actor: 'Threat Intake Agent', action: 'Analysing', detail: 'Scoping PeopleHub PII exposure.', phase: 'threat_analysis_in_progress' },
+    risk_mapped: { actor: 'Risk Assessment Agent', action: 'Risk Assessed', detail: 'RSK-2026-0101 → ISO A.5.19.', phase: 'risk_mapped' },
+    policy_generated: { actor: 'Control Engineering Agent', action: 'Policy Drafted', detail: 'POL-TPRM-2026-011 ready.', phase: 'policy_generated' },
+    awaiting_approval: { actor: 'Orchestration', action: 'Approval Gate', detail: 'Awaiting CRO & DPO.', phase: 'awaiting_approval' },
+    deployment_in_progress: { actor: 'Dr. Elena Vasquez', action: 'Approved', detail: 'Rotating credentials; enabling mTLS.', phase: 'deployment_in_progress' },
+    environment_updated: { actor: 'Environment Controller', action: 'Target State Reached', detail: 'All vendor connectors on OAuth+mTLS.', phase: 'environment_updated' },
+    deployment_complete: { actor: 'Board Reporting', action: 'Board Refreshed', detail: 'Risk posture updated; loop closed.', phase: 'deployment_complete' },
+  },
+};
+
+export const ALL_SCENARIOS: ScenarioData[] = [scenario2, scenario1, scenario3, scenario4];
