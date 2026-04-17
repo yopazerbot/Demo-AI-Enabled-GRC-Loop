@@ -652,4 +652,167 @@ export const scenario4: ScenarioData = {
   },
 };
 
-export const ALL_SCENARIOS: ScenarioData[] = [scenario2, scenario1, scenario3, scenario4];
+export const scenario5: ScenarioData = {
+  id: 'cloud-exposure-s3',
+  label: 'Exposed Cloud Storage',
+  subtitle: 'Cloud Posture & Data Protection',
+  icon: 'cloud',
+
+  threatEvent: {
+    id: 'CSPM-2026-00812',
+    title: 'Publicly Accessible S3 Bucket Containing 42,000 Customer Contracts',
+    description: 'Wiz CSPM scanner flagged S3 bucket vh-customer-archive with a public ACL exposing 42,000 signed contracts containing PII and commercial terms for 18 enterprise customers.',
+    severity: 'critical',
+    confidence: 'high',
+    tlp: 'AMBER',
+    threatVector: 'Cloud misconfiguration → Public ACL → Data disclosure',
+    suggestedMitigation: 'Lock the bucket ACL, enforce SCPs blocking public storage org-wide, require customer-managed keys and continuous drift detection.',
+    timestamp: '2026-04-16T14:47:00Z',
+    source: 'Wiz CSPM / AWS Security Hub',
+    affectedEntities: ['verhelst'],
+    tags: ['CIS AWS 2.1.5', 'PII', 'Cloud misconfig', 'GDPR'],
+  },
+
+  threatSummary: {
+    shortTitle: 'Exposed S3 Bucket',
+    description: '42,000 customer contracts publicly accessible on AWS',
+    vector: 'Misconfig → Public ACL → PII Disclosure',
+    source: 'Wiz CSPM',
+  },
+
+  riskMapping: {
+    riskId: 'RSK-2026-0103',
+    riskStatement: 'Disclosure of customer contracts and PII from misconfigured public cloud storage, with GDPR and commercial-confidentiality consequences.',
+    riskOwner: 'Arjun Malhotra, Head of Cloud',
+    impactedCapability: 'Cloud Security Posture Management',
+    residualExposure: 66,
+    isoControlTheme: 'A.5.23, A.8.12 — Cloud Security & DLP (ISO/IEC 27001:2022)',
+    isoControlRef: 'A.5.23 · A.8.12 · A.8.10',
+    affectedEntities: [
+      { entityId: 'verhelst', entityName: 'Verhelst Industries', localExposure: 66, localImpact: '1 of 340 buckets public. No preventive SCP in place; CSPM is detective-only.' },
+    ],
+  },
+
+  analysisSummary: {
+    isoTheme: 'ISO/IEC 27001',
+    isoCode: 'A.5.23 · Cloud Security',
+    isoDetail: 'Public storage exposure risk',
+    riskStatement: '42,000 customer contracts exposed on a public S3 bucket. Absent preventive guardrails a recurrence is likely. Potential GDPR fines and contractual breach with 18 enterprise customers.',
+    likelihood: 'High',
+    impact: 'Critical',
+    callout: 'No organization-wide SCP blocking public buckets. CSPM is detective-only.',
+  },
+
+  policy: {
+    policyId: 'POL-CLOUD-2026-019',
+    title: 'Preventive SCPs Blocking Public Storage & Mandatory CMK Encryption at Rest',
+    scope: 'group',
+    scopeLabel: 'Organization-wide (AWS / Azure / GCP)',
+    humanReadable: '',
+    policyAsCode: '',
+    effectiveDate: '2026-04-16',
+    rationale: 'Exposed bucket demonstrates reactive-only cloud controls. Preventive guardrails required across the cloud estate.',
+  },
+
+  policySummary: {
+    title: 'Cloud Storage Guardrails',
+    subtitle: 'No public buckets · CMK encryption · drift detection',
+    requirements: [
+      { icon: 'cloud', text: 'SCPs block public buckets org-wide' },
+      { icon: 'lock', text: 'Customer-managed keys required at rest' },
+      { icon: 'scan', text: 'CSPM continuous drift detection' },
+    ],
+    scope: 'Organization-wide · immediate enforcement',
+  },
+
+  approval: {
+    id: 'APR-2026-0367',
+    reasonForChange: 'Live exposure of 42,000 customer contracts on a public cloud bucket.',
+    scope: 'group',
+    scopeLabel: 'Organization-wide',
+    expectedImpact: 'Closes public access, prevents recurrence via SCP guardrails, and encrypts customer data with CMK.',
+    businessFrictionWarning: '14 buckets need CMK rekey; brief read latency during migration. 3 legacy apps must update SDKs.',
+    approverName: 'Dr. Elena Vasquez',
+    approverRole: 'Chief Risk Officer',
+    impactedEntities: ['Verhelst Industries'],
+    status: 'pending',
+  },
+
+  approvalSummary: {
+    reason: 'Approve preventive cloud-storage guardrails and CMK-based encryption at rest.',
+    friction: '14 buckets rekeyed to CMK. 3 legacy apps need SDK update.',
+  },
+
+  boardStatement: {
+    before: 'A live public cloud storage exposure has pushed cloud-data risk outside board-stated appetite. CSPM-led response under way.',
+    after: 'Cloud-data risk returned to within appetite. Organization-wide SCP guardrails prevent public storage by construction, and CMK encryption evidences ISO 27001 A.5.23 and A.8.12 controls.',
+  },
+
+  controlAction: 'Locked the exposed bucket, applied organization-wide SCPs blocking public storage, enforced customer-managed keys at rest, and enabled CSPM continuous drift detection.',
+
+  envBefore: {
+    entityId: 'verhelst', entityName: 'Verhelst Industries', complianceScore: 67,
+    policyAssignments: [], affectedAssets: [
+      { id: 'C1', name: 'vh-customer-archive (S3)', type: 'Data Store', compliant: false, lastChecked: '' },
+      { id: 'C2', name: 'AWS Organization SCPs', type: 'Governance', compliant: false, lastChecked: '' },
+      { id: 'C3', name: 'CloudTrail Log Store', type: 'Logging', compliant: true, lastChecked: '' },
+      { id: 'C4', name: 'KMS (CMK)', type: 'Crypto', compliant: false, lastChecked: '' },
+      { id: 'C5', name: 'Wiz CSPM Scanner', type: 'CSPM', compliant: true, lastChecked: '' },
+    ], remediationStatus: [],
+  },
+
+  envAfter: {
+    entityId: 'verhelst', entityName: 'Verhelst Industries', complianceScore: 94,
+    policyAssignments: [], affectedAssets: [
+      { id: 'C1', name: 'vh-customer-archive (S3)', type: 'Data Store', compliant: true, lastChecked: '' },
+      { id: 'C2', name: 'AWS Organization SCPs', type: 'Governance', compliant: true, lastChecked: '' },
+      { id: 'C3', name: 'CloudTrail Log Store', type: 'Logging', compliant: true, lastChecked: '' },
+      { id: 'C4', name: 'KMS (CMK)', type: 'Crypto', compliant: true, lastChecked: '' },
+      { id: 'C5', name: 'Wiz CSPM Scanner', type: 'CSPM', compliant: true, lastChecked: '' },
+    ], remediationStatus: [],
+  },
+
+  metricsBefore: {
+    entityId: 'verhelst', entityName: 'Verhelst Industries', overallRiskScore: 38, compliancePosture: 67, openFindings: 13, controlCoverage: 68,
+    exposureTrend: [30, 32, 33, 35, 37, 38], complianceTrend: [75, 73, 71, 70, 68, 67],
+  },
+
+  metricsAfter: {
+    entityId: 'verhelst', entityName: 'Verhelst Industries', overallRiskScore: 10, compliancePosture: 94, openFindings: 2, controlCoverage: 93,
+    exposureTrend: [32, 33, 35, 38, 22, 10], complianceTrend: [73, 71, 70, 67, 84, 94],
+  },
+
+  agents: [
+    { id: 'threat-intake', name: 'Threat Intake Agent', role: 'Interprets the CSPM finding and its business exposure.', status: 'idle', description: '' },
+    { id: 'risk-mapping', name: 'Risk Assessment Agent', role: 'Correlates exposed objects with data classification and contracts.', status: 'idle', description: '' },
+    { id: 'control-engineering', name: 'Control Engineering Agent', role: 'Drafts preventive SCP guardrails and CMK encryption policy-as-code.', status: 'idle', description: '' },
+  ],
+
+  agentSteps: {
+    'threat-intake': {
+      processing: 'Parsing CSPM-2026-00812, mapping to CIS AWS Foundations benchmarks…',
+      output: 'Public S3 bucket exposes 42,000 customer contracts with PII. GDPR and contractual-breach exposure.',
+    },
+    'risk-mapping': {
+      processing: 'Correlating exposed objects with data classification and customer contract register…',
+      output: 'Mapped to RSK-2026-0103 (Cloud misconfig) → ISO 27001 A.5.23 Cloud Security. Exposure: 66%.',
+    },
+    'control-engineering': {
+      processing: 'Drafting SCP guardrail set and CMK encryption policy-as-code…',
+      output: 'POL-CLOUD-2026-019 drafted: SCPs block public buckets, CMK at rest, continuous drift detection.',
+    },
+  },
+
+  auditEntries: {
+    new_event_received: { actor: 'Wiz Connector', action: 'Finding Ingested', detail: 'CSPM-2026-00812 — Public bucket. Critical.', phase: 'new_event_received' },
+    threat_analysis_in_progress: { actor: 'Threat Intake Agent', action: 'Analysing', detail: 'Assessing blast radius of public bucket.', phase: 'threat_analysis_in_progress' },
+    risk_mapped: { actor: 'Risk Assessment Agent', action: 'Risk Assessed', detail: 'RSK-2026-0103 → ISO A.5.23.', phase: 'risk_mapped' },
+    policy_generated: { actor: 'Control Engineering Agent', action: 'Policy Drafted', detail: 'POL-CLOUD-2026-019 ready.', phase: 'policy_generated' },
+    awaiting_approval: { actor: 'Orchestration', action: 'Approval Gate', detail: 'Awaiting CRO.', phase: 'awaiting_approval' },
+    deployment_in_progress: { actor: 'Dr. Elena Vasquez', action: 'Approved', detail: 'Applying SCPs and CMK.', phase: 'deployment_in_progress' },
+    environment_updated: { actor: 'Environment Controller', action: 'Target State Reached', detail: 'Bucket locked; guardrails live.', phase: 'environment_updated' },
+    deployment_complete: { actor: 'Board Reporting', action: 'Board Refreshed', detail: 'Risk posture updated; loop closed.', phase: 'deployment_complete' },
+  },
+};
+
+export const ALL_SCENARIOS: ScenarioData[] = [scenario2, scenario1, scenario3, scenario4, scenario5];
