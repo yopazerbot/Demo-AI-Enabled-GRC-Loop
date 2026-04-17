@@ -1,5 +1,168 @@
 import type { ScenarioData } from './scenarioTypes';
 
+export const explainerScenario: ScenarioData = {
+  id: 'explainer',
+  label: 'Explainer',
+  subtitle: 'How the process works, step by step',
+  icon: 'info',
+
+  threatEvent: {
+    id: 'STEP-01',
+    title: 'Step 1 — A new issue arrives',
+    description: 'The process starts when something new is reported. It could come from a feed, a person, or a tool. All we know so far: something might need attention.',
+    severity: 'medium',
+    confidence: 'medium',
+    tlp: 'GREEN',
+    threatVector: 'Any source that can report an issue',
+    suggestedMitigation: 'We will look at it in the next steps.',
+    timestamp: '2026-04-17T09:00:00Z',
+    source: 'Example input',
+    affectedEntities: ['verhelst'],
+    tags: ['example', 'walkthrough'],
+  },
+
+  threatSummary: {
+    shortTitle: 'Step 1 — A new issue arrives',
+    description: 'This is where the process starts. Someone — a person or a tool — spots something that may matter to the business.',
+    vector: 'Any source',
+    source: 'Example input',
+  },
+
+  riskMapping: {
+    riskId: 'STEP-02',
+    riskStatement: 'Step 2 — We connect the new issue to risks we already know about, so we can see what it really means for the business.',
+    riskOwner: 'The right person for this topic',
+    impactedCapability: 'Whatever part of the business is involved',
+    residualExposure: 50,
+    isoControlTheme: 'Step 2 — Map it to what we already track',
+    isoControlRef: 'See our risk list',
+    affectedEntities: [
+      { entityId: 'verhelst', entityName: 'Our Company', localExposure: 50, localImpact: 'We note which parts of the business are involved.' },
+    ],
+  },
+
+  analysisSummary: {
+    isoTheme: 'Step 2',
+    isoCode: 'Understand the issue',
+    isoDetail: 'Put it in plain words',
+    riskStatement: 'We take the raw report and turn it into one clear sentence that anyone in the business can understand. Then we link it to the risks and rules we already track.',
+    likelihood: 'Medium',
+    impact: 'Medium',
+    callout: 'The goal: make sure everyone understands what is going on and why it matters.',
+  },
+
+  policy: {
+    policyId: 'STEP-03',
+    title: 'Step 3 — Write a clear rule that fixes it',
+    scope: 'group',
+    scopeLabel: 'Wherever the issue applies',
+    humanReadable: '',
+    policyAsCode: '',
+    effectiveDate: '2026-04-17',
+    rationale: 'Now that we understand the issue, we draft a simple rule that closes the gap.',
+  },
+
+  policySummary: {
+    title: 'Step 3 — Draft a simple rule',
+    subtitle: 'One clear change that fixes the issue',
+    requirements: [
+      { icon: 'shield', text: 'Say clearly what should happen' },
+      { icon: 'scan', text: 'Say where the rule applies' },
+      { icon: 'clock', text: 'Say when it starts' },
+    ],
+    scope: 'Wherever the issue applies',
+  },
+
+  approval: {
+    id: 'STEP-04',
+    reasonForChange: 'Step 4 — A leader looks at the new rule and decides: yes or no.',
+    scope: 'group',
+    scopeLabel: 'Wherever the issue applies',
+    expectedImpact: 'If approved, the rule will be put in place and the risk will go down.',
+    businessFrictionWarning: 'Some people or systems may need to change how they work. That is the trade-off.',
+    approverName: 'A Responsible Leader',
+    approverRole: 'Decision Maker',
+    impactedEntities: ['Our Company'],
+    status: 'pending',
+  },
+
+  approvalSummary: {
+    reason: 'A leader reviews the rule and decides whether to go ahead.',
+    friction: 'There is always a small cost to change. We make it visible before we decide.',
+  },
+
+  boardStatement: {
+    before: 'Right now the risk is higher than we want it to be. We have a plan and we are about to act on it.',
+    after: 'The risk has come down to a level we are happy with. The change is in place and the loop is closed.',
+  },
+
+  controlAction: 'In this step we roll out the approved rule to the right systems, so that the real world now matches what the rule says.',
+
+  envBefore: {
+    entityId: 'verhelst', entityName: 'Our Company', complianceScore: 60,
+    policyAssignments: [], affectedAssets: [
+      { id: 'E1', name: 'System A', type: 'Example', compliant: false, lastChecked: '' },
+      { id: 'E2', name: 'System B', type: 'Example', compliant: false, lastChecked: '' },
+      { id: 'E3', name: 'System C', type: 'Example', compliant: true, lastChecked: '' },
+      { id: 'E4', name: 'System D', type: 'Example', compliant: false, lastChecked: '' },
+      { id: 'E5', name: 'System E', type: 'Example', compliant: true, lastChecked: '' },
+    ], remediationStatus: [],
+  },
+
+  envAfter: {
+    entityId: 'verhelst', entityName: 'Our Company', complianceScore: 95,
+    policyAssignments: [], affectedAssets: [
+      { id: 'E1', name: 'System A', type: 'Example', compliant: true, lastChecked: '' },
+      { id: 'E2', name: 'System B', type: 'Example', compliant: true, lastChecked: '' },
+      { id: 'E3', name: 'System C', type: 'Example', compliant: true, lastChecked: '' },
+      { id: 'E4', name: 'System D', type: 'Example', compliant: true, lastChecked: '' },
+      { id: 'E5', name: 'System E', type: 'Example', compliant: true, lastChecked: '' },
+    ], remediationStatus: [],
+  },
+
+  metricsBefore: {
+    entityId: 'verhelst', entityName: 'Our Company', overallRiskScore: 40, compliancePosture: 60, openFindings: 10, controlCoverage: 60,
+    exposureTrend: [30, 32, 34, 36, 38, 40], complianceTrend: [70, 68, 66, 64, 62, 60],
+  },
+
+  metricsAfter: {
+    entityId: 'verhelst', entityName: 'Our Company', overallRiskScore: 10, compliancePosture: 95, openFindings: 2, controlCoverage: 95,
+    exposureTrend: [32, 34, 36, 40, 25, 10], complianceTrend: [68, 66, 64, 60, 80, 95],
+  },
+
+  agents: [
+    { id: 'threat-intake', name: 'Reader', role: 'Reads the new issue and says it in simple words.', status: 'idle', description: '' },
+    { id: 'risk-mapping', name: 'Connector', role: 'Links the issue to what we already know and track.', status: 'idle', description: '' },
+    { id: 'control-engineering', name: 'Writer', role: 'Writes a clear rule that would fix the issue.', status: 'idle', description: '' },
+  ],
+
+  agentSteps: {
+    'threat-intake': {
+      processing: 'Reading the new issue and putting it into simple words…',
+      output: 'Here is what happened, in one clear sentence anyone can understand.',
+    },
+    'risk-mapping': {
+      processing: 'Checking how this fits with the risks and rules we already track…',
+      output: 'The issue is linked to a risk area we already watch.',
+    },
+    'control-engineering': {
+      processing: 'Writing a clear rule that would fix the issue…',
+      output: 'A short, clear rule is ready for a leader to review.',
+    },
+  },
+
+  auditEntries: {
+    new_event_received: { actor: 'Step 1', action: 'Issue received', detail: 'A new issue was reported. The process starts.', phase: 'new_event_received' },
+    threat_analysis_in_progress: { actor: 'Step 2a', action: 'Understanding', detail: 'We read the issue and put it in plain words.', phase: 'threat_analysis_in_progress' },
+    risk_mapped: { actor: 'Step 2b', action: 'Linked to our risks', detail: 'We connected the issue to what we already track.', phase: 'risk_mapped' },
+    policy_generated: { actor: 'Step 3', action: 'Rule drafted', detail: 'A short, clear rule is ready for review.', phase: 'policy_generated' },
+    awaiting_approval: { actor: 'Step 4', action: 'Waiting for a leader', detail: 'A leader will now decide: go ahead, or not.', phase: 'awaiting_approval' },
+    deployment_in_progress: { actor: 'Step 5', action: 'Approved — rolling out', detail: 'The rule was approved and is being put in place.', phase: 'deployment_in_progress' },
+    environment_updated: { actor: 'Step 6', action: 'Systems are aligned', detail: 'The systems now match what the rule says.', phase: 'environment_updated' },
+    deployment_complete: { actor: 'Step 7', action: 'Leaders informed', detail: 'Leaders can see that the risk has come down. The loop is closed.', phase: 'deployment_complete' },
+  },
+};
+
 export const scenario1: ScenarioData = {
   id: 'phishing-mfa',
   label: 'AI Phishing Campaign',
@@ -326,4 +489,4 @@ export const scenario2: ScenarioData = {
   },
 };
 
-export const ALL_SCENARIOS: ScenarioData[] = [scenario1, scenario2];
+export const ALL_SCENARIOS: ScenarioData[] = [explainerScenario, scenario1, scenario2];

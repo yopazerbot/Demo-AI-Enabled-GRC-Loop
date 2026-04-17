@@ -14,7 +14,7 @@ export interface ScenarioData {
   id: string;
   label: string;
   subtitle: string;
-  icon: 'phishing' | 'bug';
+  icon: 'phishing' | 'bug' | 'info';
   threatEvent: ThreatEvent;
   riskMapping: RiskMapping;
   policy: PolicyUpdate;
