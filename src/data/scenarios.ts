@@ -326,4 +326,4 @@ export const scenario2: ScenarioData = {
   },
 };
 
-export const ALL_SCENARIOS: ScenarioData[] = [scenario1, scenario2];
+export const ALL_SCENARIOS: ScenarioData[] = [scenario2, scenario1];
