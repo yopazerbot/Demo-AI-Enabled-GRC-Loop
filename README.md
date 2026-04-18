@@ -31,7 +31,7 @@ The demo tells a single story in seven acts, showing how an AI-assisted GRC plat
 2. **AI agents triage it** — three specialised agents read the event, map it to the risk register, and draft a control response.
 3. **Risk is mapped to ISO 27001 controls** — the residual exposure is calculated and tied to a specific ISO/IEC 27001:2022 control theme with entity-level impact.
 4. **Policy Studio generates the artifact** — a human-readable policy *and* a policy-as-code artifact are drafted automatically.
-5. **A human approval gate pauses the loop** — the CRO (or delegated approver) can approve or reject. Business-friction warnings are surfaced explicitly.
+5. **A human approval gate pauses the loop** — the CISO (or delegated approver) can approve or reject. Business-friction warnings are surfaced explicitly.
 6. **The environment updates** — affected assets transition from non-compliant to compliant; the compliance score recalculates.
 7. **The board sees the result** — executive metrics (risk score, compliance posture, open findings, control coverage) refresh with a before/after narrative suitable for a board pack.
 
@@ -57,37 +57,37 @@ This makes the demo land equally well with:
 The app ships with **five realistic scenarios** plus a plain-language walkthrough. Each scenario is fully modelled end-to-end: threat event, risk mapping, ISO control refs, policy artifact, approval request, before/after environment state, before/after executive metrics, agent narration, and audit entries.
 
 ### 1. Bug Bounty Critical RCE *(default scenario)*
-- **Icon:** 🐛 · **Source:** Verhelst Bug Bounty Program
+- **Icon:** `Bug` (Lucide) · **Source:** Verhelst Bug Bounty Program
 - A researcher discloses an unauthenticated RCE in an open-source JWT library used by 14 services. No SCA gating in CI/CD.
 - **ISO control theme:** A.8.25–28 — Secure Development
 - **Response policy:** mandatory SCA gating in CI/CD, 24-hour patch SLA for critical CVEs, SBOM generation & validation.
 
 ### 2. AI Phishing Campaign
-- **Icon:** 🛡️ · **Source:** CERT.be / MISP Community
+- **Icon:** `ShieldAlert` (Lucide) · **Source:** CERT.be / MISP Community
 - AiTM phishing campaign using LLMs targeting cloud identities and OAuth tokens at EU energy operators. 23% of privileged accounts still on legacy MFA.
 - **ISO control theme:** A.8 — Access Control
 - **Response policy:** phishing-resistant MFA (FIDO2/passkeys), admin-approved OAuth consent, compliant-device requirement.
 
 ### 3. Ransomware on OT *(NIS2)*
-- **Icon:** 🔒 · **Source:** ENISA / CERT-EU
+- **Icon:** `Lock` (Lucide) · **Source:** ENISA / CERT-EU
 - A Clop-variant double-extortion campaign hitting EU discrete manufacturing MES/SCADA. Three Verhelst plants run flat IT/OT networks with online-only backups.
 - **ISO control theme:** A.5.29–30, A.8.13 — Business Continuity & Backup
 - **Response policy:** Purdue-aligned IT/OT segmentation, daily immutable offline backups, Privileged Access Workstations for OT admins.
 
 ### 4. Third-Party HR Vendor Breach *(GDPR / TPRM)*
-- **Icon:** 🏢 · **Source:** PeopleHub Trust Center / CERT-EU
+- **Icon:** `Building2` (Lucide) · **Source:** PeopleHub Trust Center / CERT-EU
 - The HR SaaS vendor PeopleHub discloses a breach via leaked API key. 1.2M workers across the EU affected; 4,200 at Verhelst.
 - **ISO control theme:** A.5.19–22, A.5.34 — Supplier Risk & Privacy
 - **Response policy:** OAuth + mTLS for all vendor integrations, 72-hour GDPR Art. 33 escalation runbook, egress monitoring on vendor connectors.
 
 ### 5. Exposed Cloud Storage *(CSPM)*
-- **Icon:** ☁️ · **Source:** Wiz CSPM / AWS Security Hub
+- **Icon:** `Cloud` (Lucide) · **Source:** Wiz CSPM / AWS Security Hub
 - A public S3 bucket exposing 42,000 signed customer contracts is detected. No preventive SCP in place; CSPM is detective-only.
 - **ISO control theme:** A.5.23, A.8.12 — Cloud Security & DLP
 - **Response policy:** organization-wide SCPs blocking public storage, customer-managed keys at rest, continuous CSPM drift detection.
 
 ### 6. Explainer *(walkthrough)*
-- **Icon:** 📖 · A plain-language walkthrough of the seven-phase process, useful as an opening to the talk or for non-technical audiences.
+- **Icon:** `BookOpen` (Lucide) · A plain-language walkthrough of the seven-phase process, useful as an opening to the talk or for non-technical audiences.
 
 Switch scenarios at any time using the **Scenario Switcher** bar beneath the header (disabled while a demo run is in progress — reset first).
 
