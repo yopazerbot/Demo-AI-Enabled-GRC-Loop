@@ -1,4 +1,4 @@
-import { ChevronRight, ChevronLeft, RotateCcw } from 'lucide-react';
+import { ChevronRight, ChevronLeft, RotateCcw, Github } from 'lucide-react';
 import type { DemoPhase } from '../types';
 
 const NEXT_LABELS: Partial<Record<DemoPhase, string>> = {
@@ -24,15 +24,27 @@ export function PhaseControls({ phase, onAdvance, onBack, onReset }: Props) {
 
   return (
     <div className="flex items-center gap-2 px-4 py-2 border-t border-surface-border bg-surface-800/60 backdrop-blur-sm">
-      <span className="text-[10px] text-slate-500">
-        Made by{' '}
+      <span className="text-[10px] text-slate-500 flex items-center gap-3">
+        <span>
+          Made by{' '}
+          <a
+            href="https://www.linkedin.com/in/yoshiparlevliet"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent-cyan/70 hover:text-accent-cyan transition-colors"
+          >
+            Yoshi Parlevliet
+          </a>
+        </span>
         <a
-          href="https://www.linkedin.com/in/yoshiparlevliet"
+          href="https://github.com/yopazerbot/Demo-AI-Enabled-GRC-Loop"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-accent-cyan/70 hover:text-accent-cyan transition-colors"
+          className="flex items-center gap-1 text-accent-cyan/70 hover:text-accent-cyan transition-colors"
+          title="View source on GitHub"
         >
-          Yoshi Parlevliet
+          <Github className="w-3 h-3" />
+          GitHub
         </a>
       </span>
 
